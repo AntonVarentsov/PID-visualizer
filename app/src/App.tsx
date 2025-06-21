@@ -9,10 +9,21 @@ import testPdf from '../../data/test_pid.pdf';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
+interface LineNumber {
+  id: number;
+  text: string;
+  x_coord: number;
+  y_coord: number;
+  width: number;
+  height: number;
+}
+
 function App() {
   const [numPages, setNumPages] = useState<number>();
   const [pageNumber, setPageNumber] = useState<number>(1);
   const [isDrawingMode, setIsDrawingMode] = useState(false);
+  const [lineNumbers, setLineNumbers] = useState<LineNumber[]>([]);
+  const [highlightedId, setHighlightedId] = useState<number | null>(null);
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const mainContainerRef = useRef<HTMLDivElement>(null);
@@ -34,7 +45,8 @@ function App() {
         const data = await response.json();
 
         if (data.line_numbers) {
-          data.line_numbers.forEach((line: any) => {
+          setLineNumbers(data.line_numbers); // Save to state
+          data.line_numbers.forEach((line: LineNumber) => {
             const rect = new fabric.Rect({
               left: line.x_coord,
               top: line.y_coord,
@@ -68,6 +80,30 @@ function App() {
       }
     };
   }, []); // Run this effect only once
+
+  // Handle Highlighting
+  useEffect(() => {
+    const canvas = fabricCanvasRef.current;
+    if (!canvas) return;
+
+    canvas.getObjects().forEach(obj => {
+      if (obj instanceof fabric.Rect && obj.data) {
+        if (obj.data.id === highlightedId) {
+          obj.set({
+            stroke: 'red',
+            strokeWidth: 3
+          });
+        } else {
+          obj.set({
+            stroke: 'blue',
+            strokeWidth: 1
+          });
+        }
+      }
+    });
+
+    canvas.renderAll();
+  }, [highlightedId]);
 
   // Handle Drawing Mode
   useEffect(() => {
@@ -167,6 +203,18 @@ function App() {
     setIsDrawingMode(!isDrawingMode);
   };
 
+  const changePage = (offset: number) => {
+    setPageNumber(prevPageNumber => prevPageNumber + offset);
+  };
+
+  const previousPage = () => {
+    changePage(-1);
+  };
+
+  const nextPage = () => {
+    changePage(1);
+  };
+
   return (
     <div className="App">
       <button 
@@ -176,31 +224,63 @@ function App() {
         {isDrawingMode ? 'Cancel Drawing' : 'Draw Rectangle'}
       </button>
       
-      <div ref={mainContainerRef} style={{ position: 'relative', margin: '0 auto' }}>
-        <div style={{ position: 'absolute', top: 0, left: 0 }}>
-          <Document file={testPdf} onLoadSuccess={onDocumentLoadSuccess}>
-            <Page
-              className="pdf-page-container"
-              pageNumber={pageNumber}
-              devicePixelRatio={3}
-              onRenderSuccess={onPageRenderSuccess}
-            />
-          </Document>
+      <div style={{ display: 'flex' }}>
+        <div ref={mainContainerRef} style={{ position: 'relative', margin: '0 auto' }}>
+          <div style={{ position: 'absolute', top: 0, left: 0 }}>
+            <Document file={testPdf} onLoadSuccess={onDocumentLoadSuccess}>
+              <Page
+                className="pdf-page-container"
+                pageNumber={pageNumber}
+                devicePixelRatio={3}
+                onRenderSuccess={onPageRenderSuccess}
+              />
+            </Document>
+          </div>
+          <canvas
+            ref={canvasRef}
+            style={{ 
+              position: 'absolute', 
+              top: 0, 
+              left: 0
+            }}
+          />
         </div>
-        <canvas
-          ref={canvasRef}
-          style={{ 
-            position: 'absolute', 
-            top: 0, 
-            left: 0
-          }}
-        />
+
+        <div className="line-numbers-list" style={{ marginLeft: '20px', width: '300px' }}>
+            <h3>Line Numbers</h3>
+            <ul>
+              {lineNumbers.map(line => (
+                <li 
+                  key={line.id}
+                  onMouseEnter={() => setHighlightedId(line.id)}
+                  onMouseLeave={() => setHighlightedId(null)}
+                  className={highlightedId === line.id ? 'highlighted' : ''}
+                >
+                  {line.text}
+                </li>
+              ))}
+            </ul>
+        </div>
       </div>
 
       <div>
         <p>
           Page {pageNumber} of {numPages}
         </p>
+        <button
+          type="button"
+          disabled={pageNumber <= 1}
+          onClick={previousPage}
+        >
+          Previous
+        </button>
+        <button
+          type="button"
+          disabled={!numPages || pageNumber >= numPages}
+          onClick={nextPage}
+        >
+          Next
+        </button>
       </div>
     </div>
   );

@@ -47,3 +47,8 @@
   /* These are the layers that steal clicks, make them transparent */
   pointer-events: none;
 }
+
+.highlighted {
+  background-color: #e6f7ff;
+  font-weight: bold;
+}

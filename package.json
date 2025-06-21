@@ -1,7 +1,17 @@
 {
+  "name": "pid-visualizer-root",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "npm-run-all --parallel dev:*",
+    "dev:backend": "cd backend && uvicorn main:app --reload --host 0.0.0.0 --port 8000",
+    "dev:frontend": "cd app && npm run dev",
+    "dev:watcher": "cd file-watcher && node index.js"
+  },
   "dependencies": {
     "@react-pdf-viewer/core": "^3.12.0",
     "fabric": "^5.5.2",
+    "npm-run-all": "^4.1.5",
     "pdfjs-dist": "^3.11.174"
   }
 }

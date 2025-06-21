@@ -4,8 +4,8 @@ from typing import List, Optional
 
 # --- LineNumber Schemas ---
 class LineNumberBase(BaseModel):
+    text: str | None = None
     page: int
-    text: str
     x_coord: float
     y_coord: float
     width: float
@@ -21,7 +21,7 @@ class LineNumber(LineNumberBase):
     updated_at: datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 # --- Document Schemas ---
 class DocumentBase(BaseModel):
@@ -37,4 +37,4 @@ class Document(DocumentBase):
     line_numbers: List[LineNumber] = []
 
     class Config:
-        orm_mode = True 
+        from_attributes = True 

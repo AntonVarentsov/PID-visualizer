@@ -1,63 +1,88 @@
-const fs = require('fs');
+const fs = require('fs').promises;
 const path = require('path');
-const { Pool } = require('pg');
+const chokidar = require('chokidar');
+const axios = require('axios');
 
 const dataDir = path.join(__dirname, '..', 'data');
-
-// Configure your PostgreSQL connection
-const pool = new Pool({
-  user: 'your_user',
-  host: 'localhost',
-  database: 'your_db',
-  password: 'your_password',
-  port: 5432,
-});
+const API_BASE_URL = 'http://localhost:8000';
 
 console.log(`Watching for file changes in ${dataDir}`);
 
-// Ensure the data directory exists
-if (!fs.existsSync(dataDir)){
-    fs.mkdirSync(dataDir, { recursive: true });
-}
+async function processFilePair(pdfFilename) {
+    const jsonFilename = pdfFilename.replace('.pdf', '.pdf_processed.json');
+    const pdfPath = path.join(dataDir, pdfFilename);
+    const jsonPath = path.join(dataDir, jsonFilename);
 
-fs.watch(dataDir, (eventType, filename) => {
-  if (eventType === 'rename' && filename) { // 'rename' often means a new file was added
-    console.log(`New file detected: ${filename}`);
-    
-    if (filename.endsWith('.pdf')) {
-      const jsonFilename = filename.replace('.pdf', '.pdf_processed.json');
-      const jsonPath = path.join(dataDir, jsonFilename);
+    try {
+        // Check if both files exist
+        await fs.access(pdfPath);
+        await fs.access(jsonPath);
 
-      // Check if the corresponding JSON file exists
-      fs.access(jsonPath, fs.constants.F_OK, (err) => {
-        if (!err) {
-          console.log(`Found matching pair: ${filename} and ${jsonFilename}`);
-          // Here you would call a function to process the files and add to DB
-          addDocumentToDb(filename);
+        console.log(`Found matching pair: ${pdfFilename} and ${jsonFilename}`);
+
+        // 1. Add document to DB via API
+        const docResponse = await axios.post(`${API_BASE_URL}/documents/`, {
+            file_name: pdfFilename,
+            pages: 1 // Placeholder, ideally we'd get this from the pdf
+        });
+
+        if (docResponse.status === 200) {
+            const documentId = docResponse.data.id;
+            console.log(`Added document ${pdfFilename} to DB with ID: ${documentId}`);
+
+            // 2. Parse JSON for the document
+            const jsonData = JSON.parse(await fs.readFile(jsonPath, 'utf-8'));
+            
+            const payload = {
+                ...jsonData,
+                line_numbers: jsonData.line_numbers.map(ln => ({...ln, page: 1}))
+            };
+
+            await axios.post(`${API_BASE_URL}/documents/${documentId}/parse-json`, payload);
+
+            console.log(`Successfully processed and sent data for document ID: ${documentId}`);
         }
-      });
+    } catch (error) {
+        if (error.code !== 'ENOENT') { // Ignore "file not found" errors during initial scan
+            console.error(`Error processing file pair for ${pdfFilename}:`, error);
+        }
     }
-  }
-});
-
-async function addDocumentToDb(pdfFilename) {
-  // In a real implementation, you would get page count from the PDF or JSON
-  const pageCount = 1; // Placeholder
-  
-  const query = 'INSERT INTO documents(file_name, pages) VALUES($1, $2) RETURNING id';
-  const values = [pdfFilename, pageCount];
-
-  try {
-    const res = await pool.query(query, values);
-    console.log(`Added document ${pdfFilename} to DB with ID: ${res.rows[0].id}`);
-  } catch (err) {
-    console.error('Error inserting document into DB', err.stack);
-  }
 }
+
+async function initialScan() {
+    console.log('Performing initial scan of data directory...');
+    try {
+        const files = await fs.readdir(dataDir);
+        const pdfFiles = files.filter(f => f.endsWith('.pdf'));
+
+        for (const pdfFile of pdfFiles) {
+            await processFilePair(pdfFile);
+        }
+        console.log('Initial scan complete.');
+    } catch (error) {
+        console.error('Error during initial scan:', error);
+    }
+}
+
+// Ensure the data directory exists and then run the initial scan
+fs.mkdir(dataDir, { recursive: true })
+    .then(() => initialScan())
+    .then(() => {
+        // After initial scan, start watching for new files
+        const watcher = chokidar.watch(path.join(dataDir, '*.pdf'), {
+            persistent: true,
+            ignoreInitial: true, // Don't re-process files on start
+        });
+
+        watcher.on('add', (filePath) => {
+            const filename = path.basename(filePath);
+            console.log(`New PDF file detected: ${filename}`);
+            processFilePair(filename);
+        });
+    });
+
 
 process.on('SIGINT', () => {
-  pool.end(() => {
-    console.log('Pool has ended');
-    process.exit(0);
-  });
-}); 
+  console.log('Stopping file watcher...');
+  process.exit(0);
+});

@@ -4,12 +4,15 @@
     { "path": "./tsconfig.app.json" },
     { "path": "./tsconfig.node.json" }
   ],
-  "skipLibCheck": true,
-  "moduleResolution": "bundler",
-  "allowImportingTsExtensions": true,
-  "resolveJsonModule": true,
-  "isolatedModules": true,
-  "noEmit": true,
-  "jsx": "react-jsx",
-  "strict": true
+  "compilerOptions": {
+    "skipLibCheck": true,
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "strict": true
+  }
 }
