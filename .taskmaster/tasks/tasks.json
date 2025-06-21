@@ -1,0 +1,236 @@
+{
+  "master": {
+    "tasks": [
+      {
+        "id": 3,
+        "title": "Setup Project Environment",
+        "description": "Initialize the project with necessary libraries and tools for development.",
+        "details": "Set up a new React project using Create React App. Install necessary libraries including react-pdf-viewer, pdf.js, fabric.js, FastAPI, and PostgreSQL. Configure ESLint and Prettier for code quality.",
+        "testStrategy": "Verify that all libraries are correctly installed and the project builds successfully.",
+        "priority": "medium",
+        "dependencies": [],
+        "status": "done",
+        "subtasks": []
+      },
+      {
+        "id": 4,
+        "title": "Implement File Watcher Service",
+        "description": "Develop a Node.js service to monitor the /data directory for new PDF and JSON files.",
+        "details": "Use Node.js fs module to watch the /data directory. On detecting new files, update the documents table in PostgreSQL with file metadata.",
+        "testStrategy": "Test by adding new files to the /data directory and verify that entries are created in the database.",
+        "priority": "medium",
+        "dependencies": [
+          3
+        ],
+        "status": "done",
+        "subtasks": []
+      },
+      {
+        "id": 5,
+        "title": "Parse JSON for Bounding Boxes",
+        "description": "Create a FastAPI endpoint to parse JSON files and extract bounding box data.",
+        "details": "Develop a FastAPI endpoint that reads JSON files, extracts bounding box data, and normalizes it for rendering. Store this data in the line_numbers table.",
+        "testStrategy": "Unit test the endpoint with sample JSON files to ensure correct extraction and normalization of bounding box data.",
+        "priority": "medium",
+        "dependencies": [
+          4
+        ],
+        "status": "done",
+        "subtasks": []
+      },
+      {
+        "id": 6,
+        "title": "Render PDF with Annotations",
+        "description": "Use react-pdf-viewer and fabric.js to render PDFs with blue bounding boxes for line numbers.",
+        "details": "Integrate react-pdf-viewer to display PDFs. Overlay fabric.js canvas to draw blue bounding boxes based on bounding box data from the database.",
+        "testStrategy": "Render a sample PDF and verify that all line numbers are correctly highlighted with blue boxes.",
+        "priority": "high",
+        "dependencies": [
+          5
+        ],
+        "status": "in-progress",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Настроить базовый рендеринг PDF",
+            "description": "Настроить React-компонент для отображения PDF-файла с использованием библиотеки @react-pdf-viewer/core.",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 6
+          },
+          {
+            "id": 2,
+            "title": "Интегрировать Fabric.js для слоя аннотаций",
+            "description": "Добавить canvas-элемент с использованием Fabric.js поверх PDF-документа для создания слоя аннотаций. Настроить его размеры в соответствии с размерами отрендеренной PDF-страницы.",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 6
+          },
+          {
+            "id": 3,
+            "title": "Реализовать рисование прямоугольников",
+            "description": "Добавить кнопку и реализовать логику для рисования прямоугольника на холсте Fabric.js с помощью мыши.",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 6
+          }
+        ]
+      },
+      {
+        "id": 7,
+        "title": "Implement Line Number List and Interaction",
+        "description": "Display a list of line numbers and enable interaction to highlight corresponding boxes on the PDF.",
+        "details": "Create a React component to list line numbers. Implement hover and click interactions to highlight corresponding bounding boxes on the PDF.",
+        "testStrategy": "Test interactions by hovering and clicking on list items and verifying the correct boxes are highlighted.",
+        "priority": "medium",
+        "dependencies": [
+          6
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 8,
+        "title": "Develop Modal for Line Number Editing",
+        "description": "Create a modal dialog for editing line numbers with validation and database update.",
+        "details": "Use shadcn/ui Dialog to create a modal for editing line numbers. Implement validation using RegEx and update changes to the database via a PATCH API call.",
+        "testStrategy": "Test the modal by editing line numbers and verifying that changes are correctly validated and saved to the database.",
+        "priority": "medium",
+        "dependencies": [
+          7
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 9,
+        "title": "Implement WebSocket for Real-time Updates",
+        "description": "Enable real-time updates for line number changes using WebSocket.",
+        "details": "Set up a WebSocket server with FastAPI to push updates to clients when line numbers are edited. Ensure multiple clients can receive updates simultaneously.",
+        "testStrategy": "Simulate multiple clients editing line numbers and verify that all clients receive real-time updates.",
+        "priority": "medium",
+        "dependencies": [
+          8
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 10,
+        "title": "Optimize UI Performance",
+        "description": "Ensure the UI meets performance requirements for latency and responsiveness.",
+        "details": "Implement debouncing for PATCH requests and optimize rendering performance to meet the latency requirement of ≤ 200 ms.",
+        "testStrategy": "Measure UI latency during interactions and ensure it meets the specified performance criteria.",
+        "priority": "medium",
+        "dependencies": [
+          9
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 11,
+        "title": "Implement Security Features",
+        "description": "Add security measures including JWT authentication and CORS configuration.",
+        "details": "Configure JWT authentication for API endpoints. Set up CORS policies and render PDFs in an iframe sandbox with 'allow-scripts'.",
+        "testStrategy": "Test security features by attempting unauthorized access and ensuring proper authentication and CORS policies are enforced.",
+        "priority": "medium",
+        "dependencies": [
+          10
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 12,
+        "title": "Internationalize the UI",
+        "description": "Translate the UI to Russian and ensure proper font rendering.",
+        "details": "Use i18n libraries to translate the UI text to Russian. Ensure fonts are correctly loaded and rendered using the Inter font family.",
+        "testStrategy": "Verify that all UI elements are correctly translated and rendered in Russian.",
+        "priority": "low",
+        "dependencies": [
+          11
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 13,
+        "title": "Implement PDF Annotation Export",
+        "description": "Enable exporting of annotations to a PDF file for offline use.",
+        "details": "Use pdf-lib to export annotations as a new layer in the PDF. Provide an option to download the annotated PDF for offline use.",
+        "testStrategy": "Test the export functionality by exporting a PDF and verifying that annotations are correctly included.",
+        "priority": "low",
+        "dependencies": [
+          12
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 14,
+        "title": "Setup Database and API Infrastructure",
+        "description": "Configure PostgreSQL database and FastAPI for handling document and line number data.",
+        "details": "Set up PostgreSQL with the provided schema. Implement FastAPI endpoints for document and line number management.",
+        "testStrategy": "Test database operations and API endpoints to ensure data is correctly stored and retrieved.",
+        "priority": "high",
+        "dependencies": [
+          3
+        ],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Создать Pydantic-схемы для API",
+            "description": "Создать Pydantic-схемы в файле schemas.py для валидации данных, поступающих в API и возвращаемых из него. Нужны схемы для Document и LineNumber.",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 14
+          },
+          {
+            "id": 2,
+            "title": "Реализовать CRUD-операции для работы с БД",
+            "description": "В файле crud.py реализовать функции для создания, чтения, обновления и удаления записей Document и LineNumber в базе данных.",
+            "details": "",
+            "status": "done",
+            "dependencies": [
+              "14.1"
+            ],
+            "parentTaskId": 14
+          },
+          {
+            "id": 3,
+            "title": "Реализовать эндпоинт GET /doc/:id",
+            "description": "В файле main.py создать эндпоинт, который будет принимать ID документа и возвращать его метаданные вместе со списком всех связанных с ним line numbers.",
+            "details": "",
+            "status": "done",
+            "dependencies": [
+              "14.2"
+            ],
+            "parentTaskId": 14
+          },
+          {
+            "id": 4,
+            "title": "Реализовать эндпоинт PATCH /line/:id",
+            "description": "В файле main.py создать эндпоинт для обновления существующей записи line number. Он должен принимать ID и новые данные (текст, статус).",
+            "details": "",
+            "status": "done",
+            "dependencies": [
+              "14.2"
+            ],
+            "parentTaskId": 14
+          }
+        ]
+      }
+    ],
+    "metadata": {
+      "created": "2025-06-21T07:11:24.410Z",
+      "updated": "2025-06-21T08:47:39.504Z",
+      "description": "Tasks for master context"
+    }
+  }
+}

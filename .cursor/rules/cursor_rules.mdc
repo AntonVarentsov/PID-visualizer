@@ -1,9 +1,3 @@
----
-description: Guidelines for creating and maintaining Cursor rules to ensure consistency and effectiveness.
-globs: .cursor/rules/*.mdc
-alwaysApply: true
----
-
 - **Required Rule Structure:**
   ```markdown
   ---
@@ -46,6 +40,22 @@ alwaysApply: true
   - Cross-reference related rules
 
 - **Best Practices:**
+  - Use bullet points for clarity
+  - Keep descriptions concise
+  - Include both DO and DON'T examples
+  - Reference actual code over theoretical examples
+  - Use consistent formatting across rules
+
+- **Automatic documentation lookup for new libraries**
+  - When a new library is used in the project for the first time, Cursor must send a request to mcp context7 to fetch documentation or reference material for this library.
+  - A brief description, a link to the official documentation, or useful examples should be added as a code comment (next to the import/usage) or in the project's technical documentation.
+  - If the library has already been used in the project, repeated requests are not required.
+  - Example:
+    ```typescript
+    import axios from 'axios'; // Docs: https://axios-http.com/docs/intro
+    // Summary: Axios is a popular HTTP client library for Node.js and browsers.
+    ```
+  - If context7 cannot find documentation, add a note: `// Documentation not found via context7`
   - Use bullet points for clarity
   - Keep descriptions concise
   - Include both DO and DON'T examples
