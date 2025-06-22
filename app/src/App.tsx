@@ -246,7 +246,7 @@ function App() {
           />
         </div>
 
-        <div className="line-numbers-list" style={{ marginLeft: '20px', width: '300px' }}>
+        <div className="line-numbers-list" style={{ marginLeft: '20px', width: '450px', flexShrink: 0 }}>
             <h3>Line Numbers</h3>
             <ul>
               {lineNumbers.map(line => (

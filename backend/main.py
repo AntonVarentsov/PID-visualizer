@@ -8,7 +8,8 @@ import models
 import schemas
 from database import SessionLocal, engine
 
-models.Base.metadata.create_all(bind=engine)
+# This will now check if the tables exist before trying to create them.
+models.Base.metadata.create_all(bind=engine, checkfirst=True)
 
 app = FastAPI()
 
@@ -59,20 +60,24 @@ def parse_json_for_document(doc_id: int, data: dict, db: Session = Depends(get_d
         raise HTTPException(status_code=404, detail="Document not found")
 
     try:
-        for line_data in data.get('line_numbers', []):
-            line_number_create = schemas.LineNumberCreate(
-                text=line_data['text'],
-                x_coord=line_data['x_coord'],
-                y_coord=line_data['y_coord'],
-                width=line_data['width'],
-                height=line_data['height']
+        # This endpoint now populates the OcrResult table
+        for ocr_data in data.get('line_numbers', []): # Assuming input key from OCR is still 'line_numbers'
+            ocr_result_create = schemas.OcrResultCreate(
+                page=ocr_data.get('page', 1), # Default to page 1 if not provided
+                text=ocr_data['text'],
+                x_coord=ocr_data['x_coord'],
+                y_coord=ocr_data['y_coord'],
+                width=ocr_data['width'],
+                height=ocr_data['height']
             )
-            crud.create_line_number(db=db, line_number=line_number_create, document_id=doc_id)
+            crud.create_ocr_result(db=db, ocr_result=ocr_result_create, document_id=doc_id)
 
+    except KeyError as e:
+        raise HTTPException(status_code=400, detail=f"Missing key in JSON data: {str(e)}")
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error processing JSON data: {str(e)}")
 
-    return {"message": "JSON processed and line numbers created successfully"}
+    return {"message": "JSON processed and OCR results created successfully"}
 
 @app.get("/")
 def read_root():

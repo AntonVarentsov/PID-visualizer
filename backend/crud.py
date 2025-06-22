@@ -4,7 +4,10 @@ import models, schemas
 # --- Document CRUD ---
 
 def get_document(db: Session, document_id: int):
-    return db.query(models.Document).options(joinedload(models.Document.line_numbers)).filter(models.Document.id == document_id).first()
+    return db.query(models.Document).options(
+        joinedload(models.Document.line_numbers),
+        joinedload(models.Document.ocr_results)
+    ).filter(models.Document.id == document_id).first()
 
 def get_documents(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.Document).offset(skip).limit(limit).all()
@@ -19,17 +22,46 @@ def create_document(db: Session, document: schemas.DocumentCreate):
     db.refresh(db_document)
     return db_document
 
-def delete_line_numbers_by_document(db: Session, document_id: int):
-    """Deletes all LineNumber records associated with a given document_id."""
-    db.query(models.LineNumber).filter(models.LineNumber.document_id == document_id).delete()
+def get_ocr_results(db: Session, document_id: int):
+    return db.query(models.OcrResult).filter(models.OcrResult.document_id == document_id).all()
+
+def delete_ocr_results_by_document(db: Session, document_id: int):
+    """Deletes all OcrResult records associated with a given document_id."""
+    db.query(models.OcrResult).filter(models.OcrResult.document_id == document_id).delete()
     db.commit()
+
+# --- OcrResult CRUD ---
+
+def create_ocr_result(db: Session, ocr_result: schemas.OcrResultCreate, document_id: int):
+    db_ocr_result = models.OcrResult(
+        document_id=document_id,
+        page=ocr_result.page,
+        text=ocr_result.text,
+        x_coord=ocr_result.x_coord,
+        y_coord=ocr_result.y_coord,
+        width=ocr_result.width,
+        height=ocr_result.height,
+        status='auto'
+    )
+    db.add(db_ocr_result)
+    db.commit()
+    db.refresh(db_ocr_result)
+    return db_ocr_result
+
+def update_ocr_result(db: Session, ocr_result_id: int, text: str, status: str):
+    db_ocr_result = db.query(models.OcrResult).filter(models.OcrResult.id == ocr_result_id).first()
+    if db_ocr_result:
+        db_ocr_result.text = text
+        db_ocr_result.status = status
+        db.commit()
+        db.refresh(db_ocr_result)
+    return db_ocr_result
 
 # --- LineNumber CRUD ---
 
 def create_line_number(db: Session, line_number: schemas.LineNumberCreate, document_id: int):
     db_line_number = models.LineNumber(
         document_id=document_id,
-        page=line_number.page,
         text=line_number.text,
         x_coord=line_number.x_coord,
         y_coord=line_number.y_coord,
@@ -49,4 +81,8 @@ def update_line_number(db: Session, line_number_id: int, text: str, status: str)
         db_line_number.status = status
         db.commit()
         db.refresh(db_line_number)
-    return db_line_number 
+    return db_line_number
+
+def delete_line_numbers_by_document(db: Session, document_id: int):
+    db.query(models.LineNumber).filter(models.LineNumber.document_id == document_id).delete()
+    db.commit() 

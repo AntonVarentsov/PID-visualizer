@@ -1,17 +1,18 @@
 {
   "name": "pid-visualizer-root",
   "version": "1.0.0",
+  "description": "Root package for PID Visualizer",
   "private": true,
   "scripts": {
-    "dev": "npm-run-all --parallel dev:*",
-    "dev:backend": "cd backend && uvicorn main:app --reload --host 0.0.0.0 --port 8000",
-    "dev:frontend": "cd app && npm run dev",
-    "dev:watcher": "cd file-watcher && node index.js"
+    "postinstall": "cd app && npm install",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:backend": "cd backend && .\\\\venv\\\\Scripts\\\\activate && uvicorn main:app --reload --host 0.0.0.0",
+    "dev:frontend": "cd app && npm run dev"
   },
-  "dependencies": {
-    "@react-pdf-viewer/core": "^3.12.0",
-    "fabric": "^5.5.2",
-    "npm-run-all": "^4.1.5",
-    "pdfjs-dist": "^3.11.174"
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
   }
 }

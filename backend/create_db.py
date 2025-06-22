@@ -7,7 +7,8 @@ def create_database():
     """
     print("Creating database tables...")
     try:
-        Base.metadata.create_all(bind=engine)
+        # checkfirst=True prevents errors if tables already exist
+        Base.metadata.create_all(bind=engine, checkfirst=True)
         print("Database tables created successfully.")
     except Exception as e:
         print(f"An error occurred during table creation: {e}")

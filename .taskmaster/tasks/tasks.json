@@ -225,11 +225,87 @@
             "parentTaskId": 14
           }
         ]
+      },
+      {
+        "id": 15,
+        "title": "Refactor Data Model and Processing for Piping Line Numbers",
+        "description": "Rename the line_numbers table to ocr_results, create a new line_numbers table, and develop a script to populate it from a ground-truth file.",
+        "details": "Begin by renaming the existing 'line_numbers' table in the database to 'ocr_results' to better reflect its purpose of storing OCR data. Next, create a new 'line_numbers' table with the appropriate schema to store line numbers separately. This table should include fields such as 'line_id', 'document_id', 'line_number', and any other necessary metadata. Develop a script to read from a ground-truth file, which contains the correct line numbers, and populate the new 'line_numbers' table with this data. Ensure the script handles various file formats (e.g., CSV, JSON) and includes error handling for data inconsistencies. Update any existing database queries and API endpoints to reflect these changes.",
+        "testStrategy": "Verify the renaming of the table by checking the database schema. Test the creation of the new 'line_numbers' table by inserting sample data and querying it. Run the script with a sample ground-truth file and check that the data is correctly inserted into the 'line_numbers' table. Ensure that any API endpoints or database queries that previously used the 'line_numbers' table are updated and functioning correctly. Validate the script's error handling by providing malformed or incomplete ground-truth files and observing the error messages.",
+        "status": "pending",
+        "dependencies": [
+          14
+        ],
+        "priority": "medium",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Migrate database: Rename line_numbers to ocr_results and create new line_numbers table",
+            "description": "",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 15
+          },
+          {
+            "id": 2,
+            "title": "Create script to populate new line_numbers table from ocr_results and a ground-truth file output/extracted_piping_lines.txt",
+            "description": "",
+            "details": "",
+            "status": "pending",
+            "dependencies": [
+              "15.1,15.5"
+            ],
+            "parentTaskId": 15
+          },
+          {
+            "id": 3,
+            "title": "Update FastAPI backend to serve data from the new line_numbers table",
+            "description": "",
+            "details": "",
+            "status": "done",
+            "dependencies": [
+              "15.1"
+            ],
+            "parentTaskId": 15
+          },
+          {
+            "id": 4,
+            "title": "Update React frontend to fetch and display data from the new line_numbers table",
+            "description": "",
+            "details": "",
+            "status": "pending",
+            "dependencies": [
+              "15.3"
+            ],
+            "parentTaskId": 15
+          },
+          {
+            "id": 5,
+            "title": "Populate ocr_results table with initial OCR data from data/pid_elements.json",
+            "description": "",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 15
+          },
+          {
+            "id": 6,
+            "title": "Run population script to fill the new line_numbers table",
+            "description": "",
+            "details": "",
+            "status": "pending",
+            "dependencies": [
+              "15.2"
+            ],
+            "parentTaskId": 15
+          }
+        ]
       }
     ],
     "metadata": {
       "created": "2025-06-21T07:11:24.410Z",
-      "updated": "2025-06-21T08:47:39.504Z",
+      "updated": "2025-06-22T08:36:35.796Z",
       "description": "Tasks for master context"
     }
   }

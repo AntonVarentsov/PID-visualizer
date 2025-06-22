@@ -1,52 +1,51 @@
+import requests
 import json
-from database import SessionLocal
-import crud
-import schemas
+import os
 
-def populate_database():
-    """
-    Populates the database with data from the processed JSON file.
-    """
-    db = SessionLocal()
+API_BASE_URL = "http://127.0.0.1:8000"
+
+def create_document(file_name="test_pid.pdf", pages=1):
+    """Creates a document record in the database."""
+    url = f"{API_BASE_URL}/documents/"
+    payload = {"file_name": file_name, "pages": pages}
     try:
-        # 1. Read the processed JSON file
-        json_path = '../data/test_pid.pdf_processed.json'
-        with open(json_path, 'r') as f:
-            data = json.load(f)
+        response = requests.post(url, json=payload)
+        response.raise_for_status()  # Raise an exception for bad status codes
+        doc_data = response.json()
+        print(f"Successfully created document with ID: {doc_data['id']}")
+        return doc_data['id']
+    except requests.exceptions.RequestException as e:
+        print(f"Error creating document: {e}")
+        return None
 
-        # 2. Extract document info and create the document
-        file_name = data.get('file_name', 'unknown.pdf')
-        pages = data.get('pages', 0)
-        
-        doc_create_schema = schemas.DocumentCreate(file_name=file_name, pages=pages)
-        db_document = crud.create_document(db=db, document=doc_create_schema)
-        print(f"Created document '{db_document.file_name}' with ID: {db_document.id}")
+def populate_ocr_results(doc_id, json_file_path):
+    """Populates the ocr_results table from a JSON file."""
+    if not os.path.exists(json_file_path):
+        print(f"Error: JSON file not found at {json_file_path}")
+        return
 
-        # 3. Create line numbers associated with the document
-        line_numbers_data = data.get('line_numbers', [])
-        if not line_numbers_data:
-            print("No line numbers found in the JSON file.")
-            return
+    url = f"{API_BASE_URL}/documents/{doc_id}/parse-json"
+    
+    with open(json_file_path, 'r') as f:
+        data = json.load(f)
 
-        for line_data in line_numbers_data:
-            line_create_schema = schemas.LineNumberCreate(
-                page=line_data.get('page', 1), # Default to page 1 if not present
-                text=line_data.get('text'),
-                x_coord=line_data.get('x_coord'),
-                y_coord=line_data.get('y_coord'),
-                width=line_data.get('width'),
-                height=line_data.get('height')
-            )
-            crud.create_line_number(db=db, line_number=line_create_schema, document_id=db_document.id)
-        
-        print(f"Successfully added {len(line_numbers_data)} line numbers to the document.")
+    try:
+        response = requests.post(url, json=data)
+        response.raise_for_status()
+        print("Successfully populated ocr_results table.")
+        print(f"Response: {response.json()}")
+    except requests.exceptions.RequestException as e:
+        print(f"Error populating ocr_results: {e}")
+        if 'response' in locals() and e.response is not None:
+            print(f"Error details: {e.response.text}")
 
-    except FileNotFoundError:
-        print(f"Error: JSON file not found at {json_path}")
-    except Exception as e:
-        print(f"An error occurred: {e}")
-    finally:
-        db.close()
 
 if __name__ == "__main__":
-    populate_database() 
+    print("Starting database population script...")
+    # The script should be run from the root directory
+    json_path = os.path.join('data', 'test_pid.pdf_processed.json')
+    
+    document_id = create_document()
+    if document_id:
+        populate_ocr_results(document_id, json_path)
+    print("Script finished.") 
