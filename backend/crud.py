@@ -9,6 +9,9 @@ def get_document(db: Session, document_id: int):
         joinedload(models.Document.ocr_results)
     ).filter(models.Document.id == document_id).first()
 
+def get_document_by_filename(db: Session, filename: str):
+    return db.query(models.Document).filter(models.Document.file_name == filename).first()
+
 def get_documents(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.Document).offset(skip).limit(limit).all()
 
@@ -24,6 +27,13 @@ def create_document(db: Session, document: schemas.DocumentCreate):
 
 def get_ocr_results(db: Session, document_id: int):
     return db.query(models.OcrResult).filter(models.OcrResult.document_id == document_id).all()
+
+def get_ocr_result_by_text(db: Session, text: str, document_id: int):
+    """Возвращает первый найденный результат OCR по точному совпадению текста в рамках документа."""
+    return db.query(models.OcrResult).filter(
+        models.OcrResult.document_id == document_id,
+        models.OcrResult.text == text
+    ).first()
 
 def delete_ocr_results_by_document(db: Session, document_id: int):
     """Deletes all OcrResult records associated with a given document_id."""

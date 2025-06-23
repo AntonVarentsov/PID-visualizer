@@ -231,7 +231,6 @@ function App() {
               <Page
                 className="pdf-page-container"
                 pageNumber={pageNumber}
-                devicePixelRatio={3}
                 onRenderSuccess={onPageRenderSuccess}
               />
             </Document>

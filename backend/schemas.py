@@ -45,7 +45,9 @@ class LineNumber(LineNumberBase):
 # --- Document Schemas ---
 class DocumentBase(BaseModel):
     file_name: str
-    pages: int
+    pages: Optional[int] = None
+    original_width: Optional[int] = None
+    original_height: Optional[int] = None
 
 class DocumentCreate(DocumentBase):
     pass
