@@ -35,6 +35,7 @@ class LineNumber(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     document_id = Column(Integer, ForeignKey("documents.id"))
+    page = Column(Integer)
     text = Column(Text, index=True)
     x_coord = Column(Float)
     y_coord = Column(Float)

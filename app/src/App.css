@@ -48,7 +48,29 @@
   pointer-events: none;
 }
 
-.highlighted {
-  background-color: #e6f7ff;
+/* --- Light Theme Styles --- */
+.line-numbers-list li.highlighted {
+  background-color: #f0f0f0; /* Light grey for hover */
+  font-weight: normal;
+  cursor: pointer;
+}
+
+.line-numbers-list li.selected {
+  background-color: #ffebee; /* Light red for selection */
+  color: #c62828; /* Darker red text for contrast */
   font-weight: bold;
+}
+
+/* --- Dark Theme Styles --- */
+@media (prefers-color-scheme: dark) {
+  .line-numbers-list li.highlighted {
+    background-color: #424242; /* Darker grey for hover */
+    color: #eeeeee;
+  }
+
+  .line-numbers-list li.selected {
+    background-color: #5d0000; /* Dark red background */
+    color: #ffcdd2; /* Light red text */
+    font-weight: bold;
+  }
 }

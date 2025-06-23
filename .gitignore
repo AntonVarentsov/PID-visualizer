@@ -21,6 +21,7 @@ backend/venv
 *.njsproj
 *.sln
 *.sw?
+*.pyc
 
 # OS specific
 .DS_Store
@@ -29,3 +30,4 @@ data/
 output/
 mcp.json
 backend/__pycache__/
+backend/__pycache__/*

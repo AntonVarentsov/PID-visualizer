@@ -40,6 +40,12 @@ def delete_ocr_results_by_document(db: Session, document_id: int):
     db.query(models.OcrResult).filter(models.OcrResult.document_id == document_id).delete()
     db.commit()
 
+def get_all_ocr_results_for_document(db: Session, document_id: int):
+    """
+    Retrieves all OCR results for a given document ID.
+    """
+    return db.query(models.OcrResult).filter(models.OcrResult.document_id == document_id).all()
+
 # --- OcrResult CRUD ---
 
 def create_ocr_result(db: Session, ocr_result: schemas.OcrResultCreate, document_id: int):
@@ -77,6 +83,7 @@ def create_line_number(db: Session, line_number: schemas.LineNumberCreate, docum
         y_coord=line_number.y_coord,
         width=line_number.width,
         height=line_number.height,
+        page=line_number.page,
         status='pending'
     )
     db.add(db_line_number)

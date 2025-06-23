@@ -26,6 +26,7 @@ class OcrResult(OcrResultBase):
 # --- LineNumber Schemas (New) ---
 class LineNumberBase(BaseModel):
     text: Optional[str] = None
+    page: int
     x_coord: float
     y_coord: float
     width: float
