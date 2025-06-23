@@ -28,3 +28,4 @@ backend/venv
 data/
 output/
 mcp.json
+backend/__pycache__/
