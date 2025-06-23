@@ -301,11 +301,157 @@
             "parentTaskId": 15
           }
         ]
+      },
+      {
+        "id": 16,
+        "title": "Implement Interactive P&ID Frame with Pan and Zoom",
+        "description": "Develop an interactive frame for P&ID diagrams with panning and zooming capabilities, maintaining A4 page size and interface element positions.",
+        "details": "Create an interactive frame for P&ID (Piping and Instrumentation Diagram) that supports panning and zooming. The frame should be set to an A4 page size. Implement panning functionality using a 'hand' tool that allows users to click and drag the diagram. Implement zooming functionality using the mouse wheel and +/- buttons, ensuring that the zoom level can be reset to the default state with a reset button. Ensure that other interface elements such as lists and buttons retain their positions during these interactions. Adjust rectangle coordinates dynamically during zoom to maintain correct positioning. The default cursor should be a 'hand' over the diagram and an 'arrow' over rectangles.",
+        "testStrategy": "Verify the frame is correctly sized to A4 dimensions. Test panning by dragging the diagram with the mouse and ensure smooth movement. Test zooming in and out using the mouse wheel and +/- buttons, and verify that the reset button returns the view to the original zoom level. Check that interface elements remain in place during interactions. Confirm that rectangle coordinates are recalculated correctly during zoom. Ensure the cursor changes appropriately between 'hand' and 'arrow' based on context.",
+        "status": "done",
+        "dependencies": [
+          14
+        ],
+        "priority": "high",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create A4 Frame Container",
+            "description": "Set up a container for the P&ID diagram with dimensions corresponding to an A4 page.",
+            "dependencies": [],
+            "details": "Use a suitable UI framework to create a container that matches the dimensions of an A4 page. Ensure the container can host the P&ID diagram and other interface elements.\n<info added on 2025-06-23T14:44:08.925Z>\nСоздан контейнер A4 для фрейма P&ID:\n\n**Что реализовано:**\n- Создан компонент PDFFrame с фиксированными размерами A4 (794x1123px при 96 DPI)\n- Добавлены CSS стили с поддержкой темной темы\n- Интегрирован в основной App.tsx компонент\n- Настроена координация событий с Fabric.js canvas (чтобы canvas мог обрабатывать клики по прямоугольникам)\n- Добавлена базовая панель управления с кнопками масштабирования\n\n**Технические детали:**\n- A4 размеры: 794px x 1123px (210mm x 297mm при 96 DPI)\n- Контейнер имеет overflow: hidden для обрезки содержимого\n- Добавлена логика предотвращения конфликтов между PDFFrame и Fabric.js событиями мыши\n- Стили адаптированы под светлую и темную темы\n\n**Файлы:**\n- app/src/components/PDFFrame.tsx - основной компонент\n- app/src/components/PDFFrame.css - стили\n- app/src/App.tsx - интеграция с основным приложением\n</info added on 2025-06-23T14:44:08.925Z>",
+            "status": "done",
+            "testStrategy": "Verify the container dimensions match A4 size and can host the diagram without overflow."
+          },
+          {
+            "id": 2,
+            "title": "Implement Panning Functionality",
+            "description": "Enable panning of the P&ID diagram using a 'hand' tool for click-and-drag interaction.",
+            "dependencies": [
+              1
+            ],
+            "details": "Add event listeners for mouse down, move, and up events to allow users to drag the diagram. Change the cursor to a 'hand' when over the diagram.\n<info added on 2025-06-23T14:49:48.060Z>\nПроблемы обнаружены:\n1. Фрейм был в вертикальной ориентации - исправлено на горизонтальную A4 (1123x794px)\n2. Перетаскивание не работало из-за конфликтов событий мыши\n\nИсправления:\n- Изменены размеры A4 на landscape ориентацию (1123x794px)\n- Переработана логика панорамирования - используются document-level события для лучшего отслеживания\n- Убрана неправильная логика применения панорамирования к координатам прямоугольников (теперь панорамирование обрабатывается через CSS transform)\n- Добавлена проверка клавиш Ctrl/Alt для предотвращения конфликтов с canvas событиями\n- Улучшены CSS стили для курсоров\n\nТехническая реализация:\n- document.addEventListener для mousemove/mouseup во время панорамирования\n- CSS transform применяется к pdf-frame-content\n- Курсор: grab/grabbing с наследованием для canvas\n</info added on 2025-06-23T14:49:48.060Z>\n<info added on 2025-06-23T14:57:19.304Z>\n🔧 Исправил конфликт с режимом рисования прямоугольников:\n\n**Проблема:** При клике и перетаскивании активировался режим рисования прямоугольника вместо панорамирования.\n\n**Решение:**\n1. Добавил состояние `isPanning` в App.tsx для отслеживания активного панорамирования\n2. Добавил callback `onPanningChange` в PDFFrame для уведомления родительского компонента\n3. Изменил логику режима рисования: `if (isDrawingMode && !isPanning)` - рисование отключается во время панорамирования\n4. Отключил обработку кликов canvas во время панорамирования: `if (isPanning) return;`\n5. Обновил зависимости useEffect для корректной работы\n\n**Техническая реализация:**\n- PDFFrame уведомляет App о состоянии панорамирования через callback\n- Режим рисования и клики canvas блокируются во время панорамирования  \n- Состояние синхронизируется между компонентами\n\nТеперь панорамирование должно работать без конфликтов с режимом рисования.\n</info added on 2025-06-23T14:57:19.304Z>\n<info added on 2025-06-23T15:05:24.613Z>\n✅ Панорамирование реализовано с правой кнопкой мыши!\n\n**Финальное решение:**\n1. **Убрали кнопку \"Draw Rectangle\"** и весь код режима рисования для устранения конфликтов\n2. **Переключили панорамирование на правую кнопку мыши** (button === 2)\n3. **Добавили preventDefault для контекстного меню** чтобы оно не появлялось при правом клике\n4. **Изменили курсоры:**\n   - По умолчанию: `default` (стрелка)\n   - Над прямоугольниками: `pointer` (рука с пальцем)\n   - При панорамировании: `grabbing` (сжатая рука)\n\n**Результат:**\n- ✅ Левая кнопка мыши - клики по прямоугольникам без конфликтов\n- ✅ Правая кнопка мыши - панорамирование схемы\n- ✅ Колесо мыши - масштабирование\n- ✅ Кнопки +/- и сброс - управление масштабом\n- ✅ Никаких случайных прямоугольников при перетаскивании\n\n**Техническая реализация:**\n- `onMouseDown` с проверкой `e.button === 2`\n- `onContextMenu` с `preventDefault()`\n- Удален весь код isDrawingMode и связанные useEffect\n</info added on 2025-06-23T15:05:24.613Z>",
+            "status": "done",
+            "testStrategy": "Test panning by dragging the diagram in various directions and ensure smooth movement."
+          },
+          {
+            "id": 3,
+            "title": "Implement Zooming with Mouse Wheel",
+            "description": "Enable zooming in and out of the P&ID diagram using the mouse wheel.",
+            "dependencies": [
+              1
+            ],
+            "details": "Attach event listeners to the mouse wheel to adjust the zoom level of the diagram. Ensure zooming is centered on the cursor position.",
+            "status": "done",
+            "testStrategy": "Test zooming in and out using the mouse wheel and verify the diagram scales correctly."
+          },
+          {
+            "id": 4,
+            "title": "Implement Zooming with Buttons",
+            "description": "Add +/- buttons to control zooming of the P&ID diagram.",
+            "dependencies": [
+              1
+            ],
+            "details": "Create UI buttons for zooming in and out. Attach event handlers to these buttons to adjust the zoom level incrementally.",
+            "status": "done",
+            "testStrategy": "Test zooming functionality using the buttons and ensure consistent behavior with mouse wheel zooming."
+          },
+          {
+            "id": 5,
+            "title": "Implement Zoom Reset Button",
+            "description": "Add a button to reset the zoom level to the default state.",
+            "dependencies": [
+              3,
+              4
+            ],
+            "details": "Create a reset button and attach an event handler to set the zoom level back to the initial state.",
+            "status": "done",
+            "testStrategy": "Test the reset button to ensure it returns the diagram to the default zoom level."
+          },
+          {
+            "id": 6,
+            "title": "Adjust Rectangle Coordinates on Zoom",
+            "description": "Ensure rectangle coordinates are dynamically adjusted during zoom to maintain correct positioning.",
+            "dependencies": [
+              3,
+              4
+            ],
+            "details": "Implement logic to recalculate rectangle positions based on the current zoom level, ensuring they remain correctly aligned with the diagram.\n<info added on 2025-06-23T15:09:35.246Z>\n✅ Реализован динамический пересчет координат прямоугольников + улучшение качества PDF при масштабировании!\n\n**Проблема:** При приближении качество PDF не улучшалось, текст был нечитаемым.\n\n**Решение:**\n1. **Добавлено состояние `pdfScale`** для отслеживания разрешения PDF\n2. **Динамическое изменение разрешения PDF** в зависимости от уровня масштабирования:\n   - `const newPdfScale = Math.min(Math.max(currentZoom, 1), 3)` \n   - Масштаб PDF изменяется от 1x до 3x в зависимости от zoom\n3. **Передача `scale={pdfScale}` в компонент Page** для увеличения разрешения рендеринга\n4. **Обновлены координаты прямоугольников** с учетом нового масштаба PDF:\n   - `line.x_coord / scale * pdfScale` - координаты масштабируются пропорционально\n5. **Добавлена зависимость `pdfScale` в useEffect** для перерисовки при изменении разрешения\n\n**Результат:**\n- ✅ При приближении качество PDF динамически улучшается\n- ✅ Текст остается четким и читаемым при любом уровне масштабирования  \n- ✅ Прямоугольники точно позиционируются относительно улучшенного PDF\n- ✅ Плавное изменение качества без скачков\n\n**Техническая реализация:**\n- useEffect с зависимостью от currentZoom обновляет pdfScale\n- React-PDF Page компонент получает динамический scale prop\n- Координаты аннотаций пересчитываются с учетом pdfScale\n</info added on 2025-06-23T15:09:35.246Z>",
+            "status": "done",
+            "testStrategy": "Test by zooming in and out and verifying that rectangles maintain their relative positions."
+          },
+          {
+            "id": 7,
+            "title": "Maintain Interface Element Positions",
+            "description": "Ensure that interface elements such as lists and buttons retain their positions during panning and zooming.",
+            "dependencies": [
+              2,
+              3,
+              4
+            ],
+            "details": "Use fixed positioning or similar techniques to keep interface elements static relative to the container.",
+            "status": "done",
+            "testStrategy": "Test panning and zooming to ensure interface elements do not move unexpectedly."
+          },
+          {
+            "id": 8,
+            "title": "Implement Cursor Management",
+            "description": "Manage cursor changes between 'hand' over the diagram and 'arrow' over rectangles.",
+            "dependencies": [
+              2,
+              6
+            ],
+            "details": "Add logic to switch the cursor style based on the current mouse position relative to the diagram and rectangles.",
+            "status": "done",
+            "testStrategy": "Test cursor changes by moving the mouse over different areas of the diagram and rectangles."
+          }
+        ]
+      },
+      {
+        "id": 17,
+        "title": "Add Touch Gesture Support for Mac and Windows Trackpads",
+        "description": "Implement touch gesture support for trackpads on Mac and Windows, including two-finger panning and pinch-to-zoom, with device type auto-detection.",
+        "details": "To enhance user interaction, implement touch gesture support for trackpads on both Mac and Windows systems. This includes enabling two-finger panning and pinch-to-zoom gestures. Begin by detecting the type of input device using platform-specific APIs or libraries. For Mac, consider using the NSEvent class for gesture recognition, and for Windows, explore the Windows.Devices.Input namespace. Ensure compatibility with existing mouse controls, where right-clicking allows panning. Integrate this functionality into the existing interactive frame developed in Task 16, ensuring seamless operation with the current panning and zooming features. Consider using a library like Hammer.js for cross-platform gesture recognition if applicable.",
+        "testStrategy": "Test the implementation on both Mac and Windows systems. Verify that two-finger panning moves the diagram smoothly and that pinch-to-zoom adjusts the zoom level correctly. Ensure that the device type is correctly detected and that mouse controls (right-click for panning) remain functional. Conduct user testing to confirm intuitive gesture recognition and responsiveness. Additionally, test the integration with the existing interactive frame to ensure no conflicts or performance issues arise.",
+        "status": "done",
+        "dependencies": [
+          16
+        ],
+        "priority": "high",
+        "subtasks": []
+      },
+      {
+        "id": 18,
+        "title": "Add Mode Switch for Mouse/Touchpad Input",
+        "description": "Implement a mode switch to toggle between mouse and touchpad input modes, ensuring correct gesture recognition on various devices.",
+        "details": "To enhance input device compatibility, implement a mode switch that allows users to toggle between mouse and touchpad input modes. In touchpad mode, two-finger movements should trigger panning (wheel events) and pinch gestures should trigger zooming. In mouse mode, right-click should enable panning and the scroll wheel should control zooming. Address the specific issue with Huawei D16 touchpads where two-finger gestures are incorrectly recognized as wheel events. This may involve device-specific gesture recognition adjustments or overrides. Ensure the mode switch is easily accessible within the user interface, possibly as a toggle button or a settings option. Consider using platform-specific APIs to accurately detect and differentiate between input devices and their gestures, building upon the existing gesture support implemented in Task 17.",
+        "testStrategy": "Test the mode switch functionality on various devices, including standard mice and touchpads, as well as specific models like the Huawei D16. Verify that in touchpad mode, two-finger gestures correctly trigger panning and pinch gestures trigger zooming. In mouse mode, ensure right-click enables panning and the scroll wheel adjusts zoom levels. Specifically test the Huawei D16 to confirm that two-finger gestures are not misinterpreted as wheel events. Ensure the mode switch is intuitive and functions correctly across different platforms.",
+        "status": "done",
+        "dependencies": [
+          16,
+          17
+        ],
+        "priority": "high",
+        "subtasks": []
+      },
+      {
+        "id": 19,
+        "title": "Fix Pinch Gesture Handling in Touchpad Mode",
+        "description": "Resolve issues with pinch gestures in touchpad mode by preventing browser zoom and correctly handling pinch events within PDF frames.",
+        "details": "To address the pinch gesture issue in touchpad mode, first ensure that the browser's default zoom behavior is disabled. This can be achieved by adding a meta viewport tag with 'user-scalable=no' and setting maximum scale to 1. Additionally, implement CSS rules to prevent zooming, such as 'touch-action: none' on relevant elements. For handling pinch events within PDF frames, enhance the gesture detection logic to accurately differentiate between pinch and other gestures. This may involve using JavaScript libraries or APIs that provide more granular control over touch events. Ensure compatibility with existing gesture handling logic from Task 18 and Task 17, which implemented mode switching and touch gesture support.",
+        "testStrategy": "Test the implementation by using a touchpad on various devices to perform pinch gestures within a PDF frame. Verify that the browser does not zoom and that the pinch gesture is correctly detected and handled within the frame. Ensure that the changes do not interfere with other touch gestures implemented in Task 17 and Task 18. Conduct tests on different browsers to ensure cross-browser compatibility.",
+        "status": "done",
+        "dependencies": [
+          17,
+          18
+        ],
+        "priority": "high",
+        "subtasks": []
       }
     ],
     "metadata": {
       "created": "2025-06-21T07:11:24.410Z",
-      "updated": "2025-06-22T08:36:35.796Z",
+      "updated": "2025-06-23T15:41:44.528Z",
       "description": "Tasks for master context"
     }
   }

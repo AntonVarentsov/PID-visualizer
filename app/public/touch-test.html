@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Touch Gesture Test</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            touch-action: manipulation;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+            overflow-x: hidden;
+        }
+        
+        .touch-info {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 14px;
+            z-index: 1000;
+        }
+        
+        .test-area {
+            width: 800px;
+            height: 600px;
+            border: 2px solid #333;
+            background: #f0f0f0;
+            margin: 20px auto;
+            position: relative;
+            overflow: hidden;
+            touch-action: none;
+        }
+        
+        .content {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            transform-origin: 0 0;
+            transition: transform 0.1s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="touch-info" id="touchInfo">
+        Touch Info: No touches
+    </div>
+    
+    <h1>Touch Gesture Test</h1>
+    <div>
+        <label>
+            <input type="radio" name="inputMode" value="mouse" checked> 🖱️ Режим мыши
+        </label>
+        <label>
+            <input type="radio" name="inputMode" value="trackpad"> 👆 Режим тачпада
+        </label>
+    </div>
+    <p>
+        <strong>Режим мыши:</strong> Правая кнопка для панорамирования, колесико для масштабирования<br>
+        <strong>Режим тачпада:</strong> Движение двумя пальцами для панорамирования, щипок для масштабирования
+    </p>
+    
+    <div class="test-area" id="testArea">
+        <div class="content" id="content"></div>
+    </div>
+
+    <script>
+        // Prevent browser zoom globally
+        document.addEventListener('wheel', (e) => {
+            // Prevent all zoom attempts when in trackpad mode or when ctrlKey is pressed
+            if (e.ctrlKey || inputMode === 'trackpad') {
+                e.preventDefault();
+                e.stopPropagation();
+                e.stopImmediatePropagation();
+                return false;
+            }
+        }, { passive: false });
+
+        document.addEventListener('touchstart', (e) => {
+            if (e.touches.length > 1) {
+                e.preventDefault();
+                e.stopPropagation();
+                e.stopImmediatePropagation();
+                return false;
+            }
+        }, { passive: false });
+
+        document.addEventListener('touchmove', (e) => {
+            if (e.touches.length > 1) {
+                e.preventDefault();
+                e.stopPropagation();
+                e.stopImmediatePropagation();
+                return false;
+            }
+        }, { passive: false });
+
+        const touchInfo = document.getElementById('touchInfo');
+        const testArea = document.getElementById('testArea');
+        const content = document.getElementById('content');
+        
+        let zoom = 1;
+        let panX = 0;
+        let panY = 0;
+        let isPanning = false;
+        let lastPanPoint = { x: 0, y: 0 };
+        let inputMode = 'mouse';
+        
+        let touchState = {
+            initialDistance: 0,
+            initialZoom: 1,
+            lastTouchCount: 0,
+            centerPoint: { x: 0, y: 0 },
+            lastPanPoint: { x: 0, y: 0 },
+            isTouchPanning: false
+        };
+        
+        function updateTransform() {
+            content.style.transform = `translate(${panX}px, ${panY}px) scale(${zoom})`;
+        }
+        
+        function updateInfo(text) {
+            touchInfo.textContent = text;
+        }
+        
+        // Handle input mode change
+        document.querySelectorAll('input[name="inputMode"]').forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                inputMode = e.target.value;
+                updateInfo(`Mode changed to: ${inputMode}`);
+            });
+        });
+        
+        // Touch helpers
+        function getTouchDistance(touch1, touch2) {
+            const dx = touch1.clientX - touch2.clientX;
+            const dy = touch1.clientY - touch2.clientY;
+            return Math.sqrt(dx * dx + dy * dy);
+        }
+        
+        function getTouchCenter(touch1, touch2) {
+            return {
+                x: (touch1.clientX + touch2.clientX) / 2,
+                y: (touch1.clientY + touch2.clientY) / 2
+            };
+        }
+        
+        // Mouse events
+        testArea.addEventListener('mousedown', (e) => {
+            if (inputMode === 'mouse' && e.button === 2) {
+                isPanning = true;
+                lastPanPoint = { x: e.clientX, y: e.clientY };
+                e.preventDefault();
+                updateInfo('Mouse: Panning started');
+            }
+        });
+        
+        document.addEventListener('mousemove', (e) => {
+            if (isPanning) {
+                const deltaX = e.clientX - lastPanPoint.x;
+                const deltaY = e.clientY - lastPanPoint.y;
+                panX += deltaX;
+                panY += deltaY;
+                lastPanPoint = { x: e.clientX, y: e.clientY };
+                updateTransform();
+                updateInfo(`Mouse: Panning (${Math.round(panX)}, ${Math.round(panY)})`);
+            }
+        });
+        
+        document.addEventListener('mouseup', () => {
+            if (isPanning) {
+                isPanning = false;
+                updateInfo('Mouse: Panning ended');
+            }
+        });
+        
+        testArea.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            e.stopImmediatePropagation();
+            
+            if (inputMode === 'trackpad') {
+                // Pinch detection: only ctrlKey indicates true pinch gesture
+                if (e.ctrlKey) {
+                    // Pinch gesture - zoom
+                    const delta = -e.deltaY * 0.003;
+                    zoom = Math.max(0.1, Math.min(5, zoom + delta));
+                    updateInfo(`Trackpad: Pinch zoom ${Math.round(zoom * 100)}% (Ctrl+deltaY: ${e.deltaY})`);
+                } else {
+                    // Two-finger scroll - pan in both directions
+                    const deltaX = -e.deltaX * 1.5; // Horizontal pan
+                    const deltaY = -e.deltaY * 1.5; // Vertical pan
+                    panX += deltaX;
+                    panY += deltaY;
+                    updateInfo(`Trackpad: Pan (${Math.round(panX)}, ${Math.round(panY)}) - deltaX: ${e.deltaX}, deltaY: ${e.deltaY}`);
+                }
+            } else {
+                // Mouse mode - wheel always zooms
+                const delta = -e.deltaY * 0.001;
+                zoom = Math.max(0.1, Math.min(5, zoom + delta));
+                updateInfo(`Mouse: Wheel zoom ${Math.round(zoom * 100)}%`);
+            }
+            
+            updateTransform();
+        });
+        
+        testArea.addEventListener('contextmenu', (e) => e.preventDefault());
+        
+        // Touch events
+        testArea.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            const touches = Array.from(e.touches);
+            
+            if (touches.length === 2) {
+                const distance = getTouchDistance(touches[0], touches[1]);
+                const center = getTouchCenter(touches[0], touches[1]);
+                const rect = testArea.getBoundingClientRect();
+                
+                touchState = {
+                    initialDistance: distance,
+                    initialZoom: zoom,
+                    lastTouchCount: 2,
+                    centerPoint: {
+                        x: center.x - rect.left,
+                        y: center.y - rect.top
+                    },
+                    lastPanPoint: center,
+                    isTouchPanning: false
+                };
+                updateInfo(`Touch: Two fingers started (distance: ${Math.round(distance)})`);
+            } else if (touches.length === 1) {
+                touchState.lastTouchCount = 1;
+                updateInfo('Touch: Single finger');
+            }
+        });
+        
+        testArea.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            const touches = Array.from(e.touches);
+            
+            if (touches.length === 2 && touchState.lastTouchCount === 2) {
+                const currentDistance = getTouchDistance(touches[0], touches[1]);
+                const currentCenter = getTouchCenter(touches[0], touches[1]);
+                
+                // Pinch zoom
+                if (touchState.initialDistance > 0) {
+                    const scale = currentDistance / touchState.initialDistance;
+                    const newZoom = Math.max(0.1, Math.min(5, touchState.initialZoom * scale));
+                    zoom = newZoom;
+                }
+                
+                // Two-finger pan
+                if (!touchState.isTouchPanning && Math.abs(currentCenter.x - touchState.lastPanPoint.x) > 5) {
+                    touchState.isTouchPanning = true;
+                }
+                
+                if (touchState.isTouchPanning) {
+                    const deltaX = currentCenter.x - touchState.lastPanPoint.x;
+                    const deltaY = currentCenter.y - touchState.lastPanPoint.y;
+                    panX += deltaX;
+                    panY += deltaY;
+                }
+                
+                touchState.lastPanPoint = currentCenter;
+                updateTransform();
+                updateInfo(`Touch: Zoom ${Math.round(zoom * 100)}%, Pan (${Math.round(panX)}, ${Math.round(panY)})`);
+            }
+        });
+        
+        testArea.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            const remainingTouches = e.touches.length;
+            
+            if (remainingTouches === 0) {
+                touchState.lastTouchCount = 0;
+                touchState.isTouchPanning = false;
+                updateInfo('Touch: All fingers lifted');
+            } else if (remainingTouches === 1 && touchState.lastTouchCount === 2) {
+                touchState.lastTouchCount = 1;
+                touchState.isTouchPanning = false;
+                touchState.initialDistance = 0;
+                updateInfo('Touch: One finger remaining');
+            }
+        });
+        
+        updateInfo('Ready - Try mouse or touch gestures!');
+    </script>
+</body>
+</html> 

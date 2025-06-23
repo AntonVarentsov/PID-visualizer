@@ -4,6 +4,7 @@ import { fabric } from 'fabric';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
 import './App.css';
+import PDFFrame from './components/PDFFrame';
 
 import testPdf from '../../data/test_pid.pdf';
 
@@ -22,10 +23,13 @@ interface Annotation {
 function App() {
   const [numPages, setNumPages] = useState<number>();
   const [pageNumber, setPageNumber] = useState<number>(1);
-  const [isDrawingMode, setIsDrawingMode] = useState(false);
   const [annotations, setAnnotations] = useState<Annotation[]>([]);
   const [highlightedId, setHighlightedId] = useState<number | null>(null);
   const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [currentZoom, setCurrentZoom] = useState<number>(1);
+  const [currentPan, setCurrentPan] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  const [isPanning, setIsPanning] = useState<boolean>(false);
+  const [pdfScale, setPdfScale] = useState<number>(1);
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const mainContainerRef = useRef<HTMLDivElement>(null);
@@ -45,6 +49,14 @@ function App() {
       }
     };
   }, []); // Run only once on mount
+
+  // Effect for updating PDF scale based on zoom level
+  useEffect(() => {
+    // Update PDF scale to maintain quality at higher zoom levels
+    // Use a higher scale when zoomed in for better text readability
+    const newPdfScale = Math.min(Math.max(currentZoom, 1), 3); // Scale between 1x and 3x
+    setPdfScale(newPdfScale);
+  }, [currentZoom]);
 
   // Effect for loading and drawing annotations
   useEffect(() => {
@@ -78,11 +90,17 @@ function App() {
             const baseStrokeWidth = 1.5;
             const padding = baseStrokeWidth; // Expand outwards to prevent clipping text
 
+            // Apply PDF scale and current zoom to coordinates
+            const adjustedLeft = ((line.x_coord / scale) * pdfScale - padding);
+            const adjustedTop = ((line.y_coord / scale) * pdfScale - padding);
+            const adjustedWidth = ((line.width / scale) * pdfScale + (padding * 2));
+            const adjustedHeight = ((line.height / scale) * pdfScale + (padding * 2));
+
             const rect = new fabric.Rect({
-              left: (line.x_coord / scale) - padding,
-              top: (line.y_coord / scale) - padding,
-              width: (line.width / scale) + (padding * 2),
-              height: (line.height / scale) + (padding * 2),
+              left: adjustedLeft,
+              top: adjustedTop,
+              width: adjustedWidth,
+              height: adjustedHeight,
               fill: 'rgba(0, 123, 255, 0.15)', // More transparent fill
               stroke: '#007bff',               // Less vibrant blue stroke
               strokeWidth: baseStrokeWidth,    // Thinner stroke
@@ -105,7 +123,7 @@ function App() {
     const timer = setTimeout(loadAndDrawAnnotations, 100);
 
     return () => clearTimeout(timer);
-  }, [pageNumber]); // Re-run when page number changes
+  }, [pageNumber, currentZoom, pdfScale]); // Re-run when page number, zoom, or PDF scale changes
 
   // Handle Highlighting and Selection styling
   useEffect(() => {
@@ -139,12 +157,15 @@ function App() {
     canvas.renderAll();
   }, [highlightedId, selectedId]);
 
-  // Handle Canvas Clicks for Selection
+  // Handle Canvas Clicks for Selection and Cursor Management
   useEffect(() => {
     const canvas = fabricCanvasRef.current;
     if (!canvas) return;
 
     const handleCanvasClick = (e: fabric.IEvent) => {
+        // Don't handle clicks if panning is active
+        if (isPanning) return;
+        
         if (e.target && e.target.data && e.target.data.id) {
             // An object with an ID was clicked
             setSelectedId(currentId => 
@@ -156,82 +177,26 @@ function App() {
         }
     };
 
+    const handleMouseMove = (e: fabric.IEvent) => {
+      if (e.target && e.target.data && e.target.data.id) {
+        // Mouse over a rectangle - cursor should be pointer
+        canvas.defaultCursor = 'pointer';
+      } else {
+        // Mouse over background - cursor should be default
+        canvas.defaultCursor = 'default';
+      }
+    };
+
     canvas.on('mouse:down', handleCanvasClick);
+    canvas.on('mouse:move', handleMouseMove);
 
     return () => {
         canvas.off('mouse:down', handleCanvasClick);
+        canvas.off('mouse:move', handleMouseMove);
     };
-  }, []); // Run only once
+  }, [isPanning]); // Re-run when panning state changes
 
-  // Handle Drawing Mode
-  useEffect(() => {
-    const canvas = fabricCanvasRef.current;
-    if (!canvas) return;
 
-    if (isDrawingMode) {
-      canvas.selection = false;
-      let rect: fabric.Rect | null = null;
-      let isDown: boolean, origX: number, origY: number;
-
-      const mouseDownHandler = (o: fabric.IEvent) => {
-        isDown = true;
-        const pointer = canvas.getPointer(o.e);
-        origX = pointer.x;
-        origY = pointer.y;
-        rect = new fabric.Rect({
-          left: origX,
-          top: origY,
-          originX: 'left',
-          originY: 'top',
-          width: 0,
-          height: 0,
-          angle: 0,
-          fill: 'rgba(0, 255, 0, 0.5)',
-          transparentCorners: false,
-          selectable: false, // Prevent selection while drawing
-        });
-        canvas.add(rect);
-      };
-
-      const mouseMoveHandler = (o: fabric.IEvent) => {
-        if (!isDown || !rect) return;
-        const pointer = canvas.getPointer(o.e);
-
-        if (origX > pointer.x) {
-            rect.set({ left: pointer.x });
-        }
-        if (origY > pointer.y) {
-            rect.set({ top: pointer.y });
-        }
-
-        rect.set({ width: Math.abs(origX - pointer.x) });
-        rect.set({ height: Math.abs(origY - pointer.y) });
-
-        canvas.renderAll();
-      };
-
-      const mouseUpHandler = () => {
-        isDown = false;
-        if (rect) {
-            rect.set({ selectable: true });
-        }
-        // Exit drawing mode after one shape
-        setIsDrawingMode(false); 
-      };
-
-      canvas.on('mouse:down', mouseDownHandler);
-      canvas.on('mouse:move', mouseMoveHandler);
-      canvas.on('mouse:up', mouseUpHandler);
-
-      // Cleanup function
-      return () => {
-        canvas.off('mouse:down', mouseDownHandler);
-        canvas.off('mouse:move', mouseMoveHandler);
-        canvas.off('mouse:up', mouseUpHandler);
-        canvas.selection = true; // Re-enable selection
-      };
-    }
-  }, [isDrawingMode]);
 
 
   function onPageRenderSuccess() {
@@ -257,9 +222,7 @@ function App() {
     setNumPages(numPages);
   }
 
-  const toggleDrawingMode = () => {
-    setIsDrawingMode(!isDrawingMode);
-  };
+
 
   const changePage = (offset: number) => {
     setPageNumber(prevPageNumber => prevPageNumber + offset);
@@ -275,33 +238,33 @@ function App() {
 
   return (
     <div className="App" style={{ textAlign: 'left' }}>
-      <button 
-        onClick={toggleDrawingMode}
-        style={{ marginBottom: '10px' }}
-      >
-        {isDrawingMode ? 'Cancel Drawing' : 'Draw Rectangle'}
-      </button>
-      
       <div style={{ display: 'flex' }}>
-        <div ref={mainContainerRef} style={{ position: 'relative' }}>
-          <div style={{ position: 'absolute', top: 0, left: 0 }}>
-            <Document file={testPdf} onLoadSuccess={onDocumentLoadSuccess}>
-              <Page
+                <PDFFrame
+          onZoomChange={setCurrentZoom}
+          onPanChange={(x, y) => setCurrentPan({ x, y })}
+          onPanningChange={setIsPanning}
+        >
+          <div ref={mainContainerRef} style={{ position: 'relative' }}>
+            <div style={{ position: 'absolute', top: 0, left: 0 }}>
+              <Document file={testPdf} onLoadSuccess={onDocumentLoadSuccess}>
+                              <Page
                 className="pdf-page-container"
                 pageNumber={pageNumber}
+                scale={pdfScale}
                 onRenderSuccess={onPageRenderSuccess}
               />
-            </Document>
+              </Document>
+            </div>
+            <canvas
+              ref={canvasRef}
+              style={{ 
+                position: 'absolute', 
+                top: 0, 
+                left: 0
+              }}
+            />
           </div>
-          <canvas
-            ref={canvasRef}
-            style={{ 
-              position: 'absolute', 
-              top: 0, 
-              left: 0
-            }}
-          />
-        </div>
+        </PDFFrame>
 
         <div className="line-numbers-list" style={{ marginLeft: '20px', width: '450px', flexShrink: 0 }}>
             <h3>Line Numbers</h3>
