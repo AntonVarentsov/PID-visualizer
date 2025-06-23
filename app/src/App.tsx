@@ -87,6 +87,9 @@ function App() {
               stroke: '#007bff',               // Less vibrant blue stroke
               strokeWidth: baseStrokeWidth,    // Thinner stroke
               selectable: true,
+              lockMovementX: true,  // Prevent horizontal movement
+              lockMovementY: true,  // Prevent vertical movement
+              hasControls: false,   // Hide scaling/rotation controls
               data: { id: line.id, text: line.text }
             });
             canvas.add(rect);
@@ -271,7 +274,7 @@ function App() {
   };
 
   return (
-    <div className="App">
+    <div className="App" style={{ textAlign: 'left' }}>
       <button 
         onClick={toggleDrawingMode}
         style={{ marginBottom: '10px' }}
@@ -280,7 +283,7 @@ function App() {
       </button>
       
       <div style={{ display: 'flex' }}>
-        <div ref={mainContainerRef} style={{ position: 'relative', margin: '0 auto' }}>
+        <div ref={mainContainerRef} style={{ position: 'relative' }}>
           <div style={{ position: 'absolute', top: 0, left: 0 }}>
             <Document file={testPdf} onLoadSuccess={onDocumentLoadSuccess}>
               <Page
