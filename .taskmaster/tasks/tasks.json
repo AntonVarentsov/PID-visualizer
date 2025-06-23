@@ -2,457 +2,684 @@
   "master": {
     "tasks": [
       {
-        "id": 3,
-        "title": "Setup Project Environment",
-        "description": "Initialize the project with necessary libraries and tools for development.",
-        "details": "Set up a new React project using Create React App. Install necessary libraries including react-pdf-viewer, pdf.js, fabric.js, FastAPI, and PostgreSQL. Configure ESLint and Prettier for code quality.",
-        "testStrategy": "Verify that all libraries are correctly installed and the project builds successfully.",
-        "priority": "medium",
+        "id": 1,
+        "title": "Setup Project Repository",
+        "description": "Initialize the project repository with the necessary structure and dependencies.",
+        "status": "pending",
         "dependencies": [],
-        "status": "done",
-        "subtasks": []
-      },
-      {
-        "id": 4,
-        "title": "Implement File Watcher Service",
-        "description": "Develop a Node.js service to monitor the /data directory for new PDF and JSON files.",
-        "details": "Use Node.js fs module to watch the /data directory. On detecting new files, update the documents table in PostgreSQL with file metadata.",
-        "testStrategy": "Test by adding new files to the /data directory and verify that entries are created in the database.",
         "priority": "medium",
-        "dependencies": [
-          3
-        ],
-        "status": "done",
-        "subtasks": []
-      },
-      {
-        "id": 5,
-        "title": "Parse JSON for Bounding Boxes",
-        "description": "Create a FastAPI endpoint to parse JSON files and extract bounding box data.",
-        "details": "Develop a FastAPI endpoint that reads JSON files, extracts bounding box data, and normalizes it for rendering. Store this data in the line_numbers table.",
-        "testStrategy": "Unit test the endpoint with sample JSON files to ensure correct extraction and normalization of bounding box data.",
-        "priority": "medium",
-        "dependencies": [
-          4
-        ],
-        "status": "done",
-        "subtasks": []
-      },
-      {
-        "id": 6,
-        "title": "Render PDF with Annotations",
-        "description": "Use react-pdf-viewer and fabric.js to render PDFs with blue bounding boxes for line numbers.",
-        "details": "Integrate react-pdf-viewer to display PDFs. Overlay fabric.js canvas to draw blue bounding boxes based on bounding box data from the database.",
-        "testStrategy": "Render a sample PDF and verify that all line numbers are correctly highlighted with blue boxes.",
-        "priority": "high",
-        "dependencies": [
-          5
-        ],
-        "status": "in-progress",
+        "details": "The project repository is already initialized with FastAPI backend, React frontend with TypeScript, PostgreSQL database, and a PDF viewer with scaling. ESLint and Prettier are configured. The remaining tasks include integrating Google Cloud Vision API for OCR in the backend, expanding the database schema for projects and corrosion loops, creating directories for storing PDFs by project, and setting up stubs for external APIs.",
+        "testStrategy": "Verify the integration of Google Cloud Vision API by checking its functionality in the backend. Ensure the database schema is expanded correctly, directories for PDFs are created and accessible, and stubs for external APIs are functioning as expected.",
         "subtasks": [
           {
             "id": 1,
-            "title": "Настроить базовый рендеринг PDF",
-            "description": "Настроить React-компонент для отображения PDF-файла с использованием библиотеки @react-pdf-viewer/core.",
-            "details": "",
+            "title": "Инициализация Git-репозитория и настройка структуры проекта",
+            "description": "Создать новый Git-репозиторий и организовать структуру проекта, включая каталоги для фронтенда, бэкенда и общих ресурсов.",
             "status": "done",
             "dependencies": [],
-            "parentTaskId": 6
+            "details": "Создайте новый репозиторий с помощью команды `git init`. Затем создайте основные каталоги: `frontend/` для React-приложения, `backend/` для FastAPI-сервера и `shared/` для общих ресурсов. Убедитесь, что структура проекта соответствует существующей архитектуре.",
+            "testStrategy": ""
           },
           {
             "id": 2,
-            "title": "Интегрировать Fabric.js для слоя аннотаций",
-            "description": "Добавить canvas-элемент с использованием Fabric.js поверх PDF-документа для создания слоя аннотаций. Настроить его размеры в соответствии с размерами отрендеренной PDF-страницы.",
-            "details": "",
-            "status": "done",
+            "title": "Интеграция Google Cloud Vision API в FastAPI-бэкенд",
+            "description": "Добавить Google Cloud Vision API клиент в FastAPI-бэкенд для обработки изображений.",
+            "status": "pending",
             "dependencies": [],
-            "parentTaskId": 6
+            "details": "Добавьте Google Cloud Vision API клиент в файл `requirements.txt` в каталоге `backend/`. Настройте аутентификацию с помощью Service Account. Убедитесь, что API интегрирован в существующие маршруты FastAPI для обработки изображений.",
+            "testStrategy": "Проверьте установку Google Cloud Vision API клиента и его функциональность в существующих маршрутах FastAPI."
           },
           {
             "id": 3,
-            "title": "Реализовать рисование прямоугольников",
-            "description": "Добавить кнопку и реализовать логику для рисования прямоугольника на холсте Fabric.js с помощью мыши.",
-            "details": "",
-            "status": "done",
+            "title": "Расширение схемы базы данных для проектов и corrosion loops",
+            "description": "Обновить схему базы данных PostgreSQL для поддержки новых сущностей проектов и corrosion loops.",
+            "status": "pending",
             "dependencies": [],
-            "parentTaskId": 6
+            "details": "Добавьте новые таблицы и поля в существующую схему базы данных PostgreSQL для поддержки сущностей проектов и corrosion loops. Убедитесь, что изменения совместимы с текущей архитектурой базы данных.",
+            "testStrategy": "Проверьте, что новые таблицы и поля корректно созданы и доступны для операций CRUD."
+          },
+          {
+            "id": 4,
+            "title": "Создание каталогов для хранения PDF по проектам",
+            "description": "Создать структуру каталогов для хранения PDF-файлов, организованных по проектам.",
+            "status": "pending",
+            "dependencies": [],
+            "details": "В корневом каталоге проекта создайте структуру каталогов для хранения PDF-файлов, организованных по проектам. Убедитесь, что структура поддерживает легкий доступ и управление файлами.",
+            "testStrategy": "Проверьте, что каталоги созданы и доступны для записи и чтения PDF-файлов."
+          },
+          {
+            "id": 5,
+            "title": "Создание заглушек для внешних API",
+            "description": "Создать заглушки для интеграции с внешними API, включая OCR и группировку loops.",
+            "status": "pending",
+            "dependencies": [],
+            "details": "Определите требования к интерфейсам внешних сервисов и создайте заглушки для их интеграции. Убедитесь, что заглушки позволяют тестировать взаимодействие с внешними API без реальных вызовов.",
+            "testStrategy": "Проверьте, что заглушки корректно имитируют взаимодействие с внешними API и позволяют тестировать функциональность системы."
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "title": "Implement Project Management Backend",
+        "description": "Expand the existing backend functionality to include project management features.",
+        "status": "pending",
+        "dependencies": [
+          1
+        ],
+        "priority": "medium",
+        "details": "Extend the current FastAPI setup with SQLAlchemy and PostgreSQL to include new models and endpoints. Add models for projects and corrosion_loops in models.py. Expand Pydantic schemas to accommodate new models. Implement additional endpoints for managing projects, ensuring they are RESTful and follow best practices for API design.",
+        "testStrategy": "Test each new API endpoint using Postman or a similar tool to ensure correct functionality. Validate database operations through unit tests using pytest.",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Разработка моделей данных и схем с использованием SQLAlchemy и Pydantic",
+            "description": "Создать модели данных для управления проектами с помощью SQLAlchemy и соответствующие схемы Pydantic для валидации данных.",
+            "status": "pending",
+            "dependencies": [],
+            "details": "Определить модели данных, такие как Project, Task и User, используя SQLAlchemy. Создать соответствующие схемы Pydantic для валидации входных и выходных данных API.",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Реализация CRUD-эндпоинтов в FastAPI для управления проектами",
+            "description": "Создать эндпоинты в FastAPI для операций создания, чтения, обновления и удаления проектов, задач и пользователей.",
+            "status": "pending",
+            "dependencies": [
+              1
+            ],
+            "details": "Используя созданные модели и схемы, разработать эндпоинты для CRUD-операций, обеспечивая соответствие принципам RESTful API.",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Интеграция FastAPI с PostgreSQL через SQLAlchemy",
+            "description": "Настроить подключение FastAPI к базе данных PostgreSQL с использованием SQLAlchemy.",
+            "status": "pending",
+            "dependencies": [
+              1,
+              2
+            ],
+            "details": "Настроить соединение с PostgreSQL, используя SQLAlchemy, и обеспечить взаимодействие с базой данных через созданные модели.",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Разработка модульных тестов для эндпоинтов FastAPI с использованием pytest",
+            "description": "Написать модульные тесты для всех эндпоинтов FastAPI, обеспечивая их корректную работу.",
+            "status": "pending",
+            "dependencies": [
+              2,
+              3
+            ],
+            "details": "Используя pytest, разработать тесты для проверки функциональности каждого эндпоинта, включая позитивные и негативные сценарии.",
+            "testStrategy": ""
+          },
+          {
+            "id": 5,
+            "title": "Добавление модели projects и corrosion_loops в models.py",
+            "description": "Расширить существующие модели, добавив новые модели для управления проектами и коррозионными петлями.",
+            "status": "pending",
+            "dependencies": [],
+            "details": "Добавить модели projects и corrosion_loops в файл models.py, используя SQLAlchemy.",
+            "testStrategy": "Проверить корректность создания моделей и их взаимодействие с базой данных через тесты."
+          },
+          {
+            "id": 6,
+            "title": "Расширение схем Pydantic для новых моделей",
+            "description": "Обновить схемы Pydantic для поддержки новых моделей данных.",
+            "status": "pending",
+            "dependencies": [
+              5
+            ],
+            "details": "Создать и обновить схемы Pydantic для моделей projects и corrosion_loops для валидации данных.",
+            "testStrategy": "Проверить валидацию данных через тесты, убедившись в корректной работе схем."
+          },
+          {
+            "id": 7,
+            "title": "Добавление новых эндпоинтов для управления проектами",
+            "description": "Создать новые эндпоинты в FastAPI для управления проектами, включая создание, обновление и удаление.",
+            "status": "pending",
+            "dependencies": [
+              5,
+              6
+            ],
+            "details": "Разработать новые эндпоинты для управления проектами, следуя принципам RESTful API.",
+            "testStrategy": "Тестировать новые эндпоинты с использованием Postman или аналогичного инструмента для проверки их функциональности."
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "title": "Develop PDF Upload and Storage",
+        "description": "Implement functionality for uploading and storing PDF files associated with projects.",
+        "details": "Create a FastAPI endpoint for uploading PDF files. Use SQLAlchemy to store file metadata in the database. Implement file storage using a secure directory structure. Ensure files are linked to projects via foreign keys.",
+        "testStrategy": "Upload sample PDFs and verify their storage and metadata entry in the database. Check file retrieval and deletion operations.",
+        "priority": "medium",
+        "dependencies": [
+          2
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Создание FastAPI эндпоинта для загрузки PDF-файлов",
+            "description": "Разработать эндпоинт в FastAPI для приема и обработки загрузки PDF-файлов с фронтенда.",
+            "dependencies": [],
+            "details": "Использовать существующий FastAPI бэкенд для создания эндпоинта, принимающего файлы с помощью UploadFile. Обеспечить обработку файлов формата PDF и валидацию их типа.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Реализация хранения метаданных PDF-файлов с использованием SQLAlchemy",
+            "description": "Настроить модель данных в SQLAlchemy для хранения метаданных загруженных PDF-файлов в базе данных PostgreSQL.",
+            "dependencies": [
+              1
+            ],
+            "details": "Создать модель SQLAlchemy с полями для хранения информации о файле, такой как имя файла, размер, дата загрузки и путь к файлу. Интегрировать эту модель с существующей базой данных PostgreSQL.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Настройка безопасного хранения PDF-файлов",
+            "description": "Организовать безопасное хранение загруженных PDF-файлов на сервере или в облачном хранилище.",
+            "dependencies": [
+              1,
+              2
+            ],
+            "details": "Использовать существующую инфраструктуру для хранения файлов, обеспечивая контроль доступа и защиту данных. Рассмотреть использование локального хранилища или облачных сервисов, совместимых с текущей архитектурой.",
+            "status": "pending",
+            "testStrategy": ""
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "title": "Integrate EasyOCR for Line Number Recognition",
+        "description": "Set up OCR functionality using Google Cloud Vision API to recognize line numbers in uploaded PDFs.",
+        "status": "pending",
+        "dependencies": [
+          3
+        ],
+        "priority": "medium",
+        "details": "Install and configure Google Cloud Vision API in the backend. Develop a FastAPI endpoint to process PDFs and extract line numbers using the Vision API. Implement error handling and logging for OCR operations. Set up authentication through a Service Account and create a stub for the OCR service with a clear API interface. Define input/output requirements for the OCR API for the external team.\n<info added on 2025-06-23T18:13:19.839Z>\nIntegrate Google Cloud Vision API for Line Number Recognition\n</info added on 2025-06-23T18:13:19.839Z>",
+        "testStrategy": "Test OCR functionality with various PDF samples to ensure accurate line number recognition using Google Cloud Vision API. Validate error handling by simulating OCR failures. Ensure that the authentication and API interface function correctly.",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Установка и настройка EasyOCR",
+            "description": "Установить библиотеку EasyOCR и настроить её для распознавания номеров строк в PDF-документах.",
+            "status": "pending",
+            "dependencies": [],
+            "details": "Установить EasyOCR с помощью pip и убедиться, что все необходимые зависимости установлены. Провести тестирование распознавания текста на образцах PDF, чтобы убедиться в корректной работе.\n<info added on 2025-06-23T18:13:34.014Z>\nУстановить google-cloud-vision с помощью pip. Настроить Service Account для аутентификации. Настроить GOOGLE_APPLICATION_CREDENTIALS. Провести тестирование распознавания текста на образцах PDF.\n</info added on 2025-06-23T18:13:34.014Z>",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Разработка FastAPI эндпоинта для обработки PDF",
+            "description": "Создать эндпоинт в FastAPI для загрузки PDF-файлов и обработки их с использованием EasyOCR.",
+            "status": "pending",
+            "dependencies": [
+              1
+            ],
+            "details": "Разработать эндпоинт, который принимает PDF-файл, извлекает его содержимое и использует EasyOCR для распознавания номеров строк. Убедиться, что эндпоинт интегрирован с существующей архитектурой FastAPI и взаимодействует с PostgreSQL для хранения результатов.\n<info added on 2025-06-23T18:13:48.874Z>\nСоздать эндпоинт в FastAPI для загрузки PDF-файлов и обработки их с использованием Google Cloud Vision API. Разработать эндпоинт, который принимает PDF-файл, извлекает его содержимое и использует Google Cloud Vision API для распознавания номеров строк. Убедиться, что эндпоинт интегрирован с существующей архитектурой FastAPI и взаимодействует с PostgreSQL для хранения результатов.\n</info added on 2025-06-23T18:13:48.874Z>",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Реализация обработки ошибок в FastAPI",
+            "description": "Внедрить обработку ошибок в FastAPI для обеспечения надежности при обработке PDF-файлов.",
+            "status": "pending",
+            "dependencies": [
+              2
+            ],
+            "details": "Создать глобальные обработчики исключений для различных типов ошибок, включая ошибки валидации, ошибки базы данных и неожиданные исключения. Убедиться, что обработчики возвращают информативные сообщения об ошибках и соответствующие коды состояния HTTP. Например, можно создать обработчик для RequestValidationError, который возвращает статус 422 и подробности ошибки.",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Настройка механизмов логирования в FastAPI",
+            "description": "Настроить логирование в FastAPI для мониторинга и отладки процесса обработки PDF-файлов.",
+            "status": "pending",
+            "dependencies": [
+              3
+            ],
+            "details": "Использовать встроенный модуль logging для настройки логирования. Определить уровни логирования (INFO, ERROR и т.д.) и форматы сообщений. Убедиться, что логи записываются в файл и/или выводятся в консоль. Например, можно настроить логирование с помощью logging.basicConfig(level=logging.INFO) и создать логгер с помощью logging.getLogger(__name__).",
+            "testStrategy": ""
+          },
+          {
+            "id": 5,
+            "title": "Настройка Google Cloud Vision API",
+            "description": "Настроить Google Cloud Vision API для распознавания номеров строк в PDF-документах.",
+            "status": "pending",
+            "dependencies": [],
+            "details": "Настроить аутентификацию через Service Account и интегрировать Google Cloud Vision API в проект. Убедиться, что все необходимые разрешения и конфигурации установлены.",
+            "testStrategy": "Проверить, что аутентификация и доступ к API работают корректно."
+          },
+          {
+            "id": 6,
+            "title": "Создание заглушки для OCR сервиса",
+            "description": "Создать заглушку для OCR сервиса с четким API интерфейсом.",
+            "status": "pending",
+            "dependencies": [
+              5
+            ],
+            "details": "Определить и реализовать API интерфейс для OCR сервиса, который принимает PDF файл (base64 или URL) и параметры распознавания (языки, типы документов).",
+            "testStrategy": "Убедиться, что заглушка корректно принимает входные данные и возвращает ожидаемый формат данных."
+          },
+          {
+            "id": 7,
+            "title": "Определение требований к входным/выходным данным OCR API",
+            "description": "Определить требования к входным и выходным данным для OCR API, которые будут использоваться внешней командой.",
+            "status": "pending",
+            "dependencies": [
+              6
+            ],
+            "details": "Документировать формат входных данных (PDF файл, параметры распознавания) и выходных данных (распознанный текст с координатами, confidence scores, метаданные о качестве распознавания).",
+            "testStrategy": "Проверить, что документация соответствует требованиям и понятна для внешней команды."
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "title": "Implement Corrosion Loop Grouping Logic",
+        "description": "Develop logic for integrating with an external service for grouping line numbers into corrosion loops based on predefined rules.",
+        "status": "pending",
+        "dependencies": [
+          4
+        ],
+        "priority": "medium",
+        "details": "Create a stub for the external grouping service. Define clear API requirements for the loop grouping service. Create mock data for testing. The external service should accept a list of line_numbers with coordinates, document metadata (sizes, type), and grouping parameters (algorithm, settings). It should return groups of line_numbers (corrosion loops), confidence scores for each group, visual connections between group elements, and recommendations for group adjustments.",
+        "testStrategy": "Test the integration with the external service using mock data to ensure correct loop formation and data exchange. Validate the API requirements and the handling of returned data, including confidence scores and visual connections.",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Разработка правил группировки для коррозионных петель",
+            "description": "Определить и документировать правила группировки линий в коррозионные петли на основе существующих данных и требований.",
+            "status": "pending",
+            "dependencies": [],
+            "details": "Анализировать текущие данные и определить критерии для группировки линий в коррозионные петли. Документировать эти правила для дальнейшей реализации.",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Создание FastAPI эндпоинта для группировки номеров линий",
+            "description": "Разработать и внедрить эндпоинт в FastAPI для обработки запросов на группировку номеров линий в соответствии с установленными правилами.",
+            "status": "pending",
+            "dependencies": [
+              1
+            ],
+            "details": "Используя FastAPI, создать эндпоинт, который принимает запросы на группировку номеров линий, применяет разработанные правила и возвращает результаты. Убедиться, что эндпоинт интегрируется с существующей архитектурой и использует текущие технологии проекта.",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Сохранение данных о коррозионных петлях в базе данных с соответствующими связями",
+            "description": "Обеспечить сохранение информации о коррозионных петлях в базе данных PostgreSQL с установлением необходимых связей между таблицами.",
+            "status": "pending",
+            "dependencies": [
+              2
+            ],
+            "details": "Используя SQLAlchemy и Alembic, создать или обновить модели базы данных для хранения информации о коррозионных петлях. Настроить отношения между таблицами, обеспечивая целостность данных. Реализовать функции для сохранения и извлечения данных в соответствии с установленными правилами.",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Создание заглушки для внешнего сервиса группировки",
+            "description": "Разработать заглушку, которая будет имитировать поведение внешнего сервиса группировки для тестирования.",
+            "status": "pending",
+            "dependencies": [],
+            "details": "Создать заглушку, которая принимает список line_numbers с координатами, метаданные документа и параметры группировки, и возвращает фиктивные данные о группах, confidence scores и визуальные связи.",
+            "testStrategy": "Использовать заглушку для тестирования интеграции и корректности обработки данных."
+          },
+          {
+            "id": 5,
+            "title": "Определение требований к API внешнего сервиса группировки",
+            "description": "Сформулировать и задокументировать требования к API для внешнего сервиса группировки corrosion loops.",
+            "status": "pending",
+            "dependencies": [],
+            "details": "Определить формат запросов и ответов, необходимые параметры и структуру данных для API внешнего сервиса группировки.",
+            "testStrategy": "Проверить документированные требования на полноту и соответствие проектным нуждам."
+          },
+          {
+            "id": 6,
+            "title": "Создание mock-данных для тестирования",
+            "description": "Разработать набор mock-данных для тестирования интеграции с внешним сервисом группировки.",
+            "status": "pending",
+            "dependencies": [],
+            "details": "Создать mock-данные, которые включают в себя список line_numbers с координатами, метаданные документа и параметры группировки, для использования в тестах.",
+            "testStrategy": "Использовать mock-данные для тестирования корректности обработки и передачи данных в рамках интеграции."
+          }
+        ]
+      },
+      {
+        "id": 6,
+        "title": "Develop Frontend for Project and PDF Management",
+        "description": "Adapt the existing React-based frontend to enhance project management and PDF functionalities, including multi-file upload and improved drag-and-drop capabilities.",
+        "status": "pending",
+        "dependencies": [
+          1
+        ],
+        "priority": "medium",
+        "details": "Utilize the existing React and TypeScript setup to adapt components for project management. Extend file upload to support multiple PDFs and enhance drag-and-drop functionality. Integrate with new API endpoints for improved data handling.",
+        "testStrategy": "Perform comprehensive UI testing to ensure all components render correctly and are responsive. Test multi-file upload and enhanced drag-and-drop functionalities across various browsers. Verify integration with new API endpoints.",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Создание компонентов React для управления проектами",
+            "description": "Разработать компоненты React для отображения и управления проектами, включая создание, редактирование и удаление проектов.",
+            "status": "pending",
+            "dependencies": [],
+            "details": "Использовать существующую архитектуру React и FastAPI для интеграции с бэкендом. Обеспечить взаимодействие с PostgreSQL для хранения данных о проектах.",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Реализация функциональности загрузки PDF-файлов",
+            "description": "Добавить возможность загрузки PDF-файлов в систему с помощью компонентов React.",
+            "status": "pending",
+            "dependencies": [
+              1
+            ],
+            "details": "Использовать существующий функционал загрузки файлов в FastAPI для обработки загруженных PDF-файлов. Обеспечить сохранение файлов в PostgreSQL и их последующее отображение в интерфейсе.",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Интеграция react-pdf-viewer для отображения PDF-файлов",
+            "description": "Внедрить библиотеку react-pdf-viewer для отображения загруженных PDF-файлов в интерфейсе.",
+            "status": "pending",
+            "dependencies": [
+              2
+            ],
+            "details": "Использовать существующий функционал рендеринга PDF для обеспечения масштабирования и навигации по документам. Обеспечить совместимость с текущей архитектурой React.",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Добавление поддержки drag-and-drop для загрузки файлов",
+            "description": "Реализовать возможность загрузки файлов путем перетаскивания (drag-and-drop) в интерфейсе.",
+            "status": "pending",
+            "dependencies": [
+              2
+            ],
+            "details": "Использовать библиотеку react-dropzone для реализации drag-and-drop функциональности. Обеспечить обработку событий перетаскивания и интеграцию с существующей системой загрузки файлов.",
+            "testStrategy": ""
+          },
+          {
+            "id": 5,
+            "title": "Тестирование и отладка функциональности управления проектами и PDF-файлами",
+            "description": "Провести тестирование и отладку всех компонентов, связанных с управлением проектами и PDF-файлами, для обеспечения их корректной работы.",
+            "status": "pending",
+            "dependencies": [
+              1,
+              2,
+              3,
+              4
+            ],
+            "details": "Использовать существующие инструменты тестирования для проверки функциональности компонентов. Обеспечить совместимость с текущей архитектурой и устранить возможные ошибки.",
+            "testStrategy": ""
+          },
+          {
+            "id": 6,
+            "title": "Адаптация существующих компонентов для управления проектами",
+            "description": "Добавить управление проектами в интерфейс, используя существующую архитектуру React.",
+            "status": "pending",
+            "dependencies": [
+              1
+            ],
+            "details": "Интегрировать новые API эндпоинты для управления проектами и обеспечить их отображение в интерфейсе.",
+            "testStrategy": "Проверить корректность отображения и взаимодействия с проектами в интерфейсе."
+          },
+          {
+            "id": 7,
+            "title": "Расширение функциональности загрузки файлов для нескольких PDF",
+            "description": "Обеспечить возможность загрузки нескольких PDF-файлов одновременно.",
+            "status": "pending",
+            "dependencies": [
+              2
+            ],
+            "details": "Модифицировать существующую функциональность загрузки для поддержки нескольких файлов и интеграции с новыми API эндпоинтами.",
+            "testStrategy": "Тестировать загрузку нескольких файлов в различных браузерах для обеспечения стабильности."
+          },
+          {
+            "id": 8,
+            "title": "Улучшение drag-and-drop функциональности",
+            "description": "Добавить улучшения в существующую drag-and-drop функциональность.",
+            "status": "pending",
+            "dependencies": [
+              4
+            ],
+            "details": "Интегрировать дополнительные возможности drag-and-drop, используя react-dropzone, и обеспечить их совместимость с текущей системой.",
+            "testStrategy": "Проверить работу drag-and-drop в различных сценариях использования."
           }
         ]
       },
       {
         "id": 7,
-        "title": "Implement Line Number List and Interaction",
-        "description": "Display a list of line numbers and enable interaction to highlight corresponding boxes on the PDF.",
-        "details": "Create a React component to list line numbers. Implement hover and click interactions to highlight corresponding bounding boxes on the PDF.",
-        "testStrategy": "Test interactions by hovering and clicking on list items and verifying the correct boxes are highlighted.",
-        "priority": "medium",
+        "title": "Implement Corrosion Loop Visualization",
+        "description": "Adapt the existing visualization system to display corrosion loops on PDFs using color coding.",
+        "status": "pending",
         "dependencies": [
           6
         ],
-        "status": "pending",
-        "subtasks": []
-      },
-      {
-        "id": 8,
-        "title": "Develop Modal for Line Number Editing",
-        "description": "Create a modal dialog for editing line numbers with validation and database update.",
-        "details": "Use shadcn/ui Dialog to create a modal for editing line numbers. Implement validation using RegEx and update changes to the database via a PATCH API call.",
-        "testStrategy": "Test the modal by editing line numbers and verifying that changes are correctly validated and saved to the database.",
         "priority": "medium",
-        "dependencies": [
-          7
-        ],
-        "status": "pending",
-        "subtasks": []
-      },
-      {
-        "id": 9,
-        "title": "Implement WebSocket for Real-time Updates",
-        "description": "Enable real-time updates for line number changes using WebSocket.",
-        "details": "Set up a WebSocket server with FastAPI to push updates to clients when line numbers are edited. Ensure multiple clients can receive updates simultaneously.",
-        "testStrategy": "Simulate multiple clients editing line numbers and verify that all clients receive real-time updates.",
-        "priority": "medium",
-        "dependencies": [
-          8
-        ],
-        "status": "pending",
-        "subtasks": []
-      },
-      {
-        "id": 10,
-        "title": "Optimize UI Performance",
-        "description": "Ensure the UI meets performance requirements for latency and responsiveness.",
-        "details": "Implement debouncing for PATCH requests and optimize rendering performance to meet the latency requirement of ≤ 200 ms.",
-        "testStrategy": "Measure UI latency during interactions and ensure it meets the specified performance criteria.",
-        "priority": "medium",
-        "dependencies": [
-          9
-        ],
-        "status": "pending",
-        "subtasks": []
-      },
-      {
-        "id": 11,
-        "title": "Implement Security Features",
-        "description": "Add security measures including JWT authentication and CORS configuration.",
-        "details": "Configure JWT authentication for API endpoints. Set up CORS policies and render PDFs in an iframe sandbox with 'allow-scripts'.",
-        "testStrategy": "Test security features by attempting unauthorized access and ensuring proper authentication and CORS policies are enforced.",
-        "priority": "medium",
-        "dependencies": [
-          10
-        ],
-        "status": "pending",
-        "subtasks": []
-      },
-      {
-        "id": 12,
-        "title": "Internationalize the UI",
-        "description": "Translate the UI to Russian and ensure proper font rendering.",
-        "details": "Use i18n libraries to translate the UI text to Russian. Ensure fonts are correctly loaded and rendered using the Inter font family.",
-        "testStrategy": "Verify that all UI elements are correctly translated and rendered in Russian.",
-        "priority": "low",
-        "dependencies": [
-          11
-        ],
-        "status": "pending",
-        "subtasks": []
-      },
-      {
-        "id": 13,
-        "title": "Implement PDF Annotation Export",
-        "description": "Enable exporting of annotations to a PDF file for offline use.",
-        "details": "Use pdf-lib to export annotations as a new layer in the PDF. Provide an option to download the annotated PDF for offline use.",
-        "testStrategy": "Test the export functionality by exporting a PDF and verifying that annotations are correctly included.",
-        "priority": "low",
-        "dependencies": [
-          12
-        ],
-        "status": "pending",
-        "subtasks": []
-      },
-      {
-        "id": 14,
-        "title": "Setup Database and API Infrastructure",
-        "description": "Configure PostgreSQL database and FastAPI for handling document and line number data.",
-        "details": "Set up PostgreSQL with the provided schema. Implement FastAPI endpoints for document and line number management.",
-        "testStrategy": "Test database operations and API endpoints to ensure data is correctly stored and retrieved.",
-        "priority": "high",
-        "dependencies": [
-          3
-        ],
-        "status": "done",
+        "details": "Leverage the existing PDF rendering with react-pdf-viewer and Fabric.js for annotations. Utilize the existing rectangle system with coordinates to display corrosion loops. Integrate the color scheme with the database and add loop management to the interface. Use existing APIs to fetch loop data.",
+        "testStrategy": "Test loop visualization with sample PDFs to ensure correct color application and interaction. Validate color picker functionality and integration with the database.",
         "subtasks": [
           {
             "id": 1,
-            "title": "Создать Pydantic-схемы для API",
-            "description": "Создать Pydantic-схемы в файле schemas.py для валидации данных, поступающих в API и возвращаемых из него. Нужны схемы для Document и LineNumber.",
-            "details": "",
-            "status": "done",
+            "title": "Создание компонентов React для отображения и редактирования коррозионных петель",
+            "description": "Разработать компоненты React, которые будут отображать список коррозионных петель и предоставлять интерфейс для их редактирования.",
+            "status": "pending",
             "dependencies": [],
-            "parentTaskId": 14
+            "details": "Использовать существующую архитектуру React frontend с PDF рендерингом. Создать компоненты, которые отображают список петель и предоставляют возможность их редактирования.",
+            "testStrategy": ""
           },
           {
             "id": 2,
-            "title": "Реализовать CRUD-операции для работы с БД",
-            "description": "В файле crud.py реализовать функции для создания, чтения, обновления и удаления записей Document и LineNumber в базе данных.",
-            "details": "",
-            "status": "done",
+            "title": "Интеграция компонента выбора цвета для настройки цвета петель",
+            "description": "Внедрить компонент выбора цвета в интерфейс редактирования петель, чтобы пользователи могли настраивать цвет каждой петли.",
+            "status": "pending",
             "dependencies": [
-              "14.1"
+              1
             ],
-            "parentTaskId": 14
+            "details": "Использовать библиотеку react-color-picker для интеграции компонента выбора цвета в существующие компоненты редактирования петель.",
+            "testStrategy": ""
           },
           {
             "id": 3,
-            "title": "Реализовать эндпоинт GET /doc/:id",
-            "description": "В файле main.py создать эндпоинт, который будет принимать ID документа и возвращать его метаданные вместе со списком всех связанных с ним line numbers.",
-            "details": "",
-            "status": "done",
-            "dependencies": [
-              "14.2"
-            ],
-            "parentTaskId": 14
-          },
-          {
-            "id": 4,
-            "title": "Реализовать эндпоинт PATCH /line/:id",
-            "description": "В файле main.py создать эндпоинт для обновления существующей записи line number. Он должен принимать ID и новые данные (текст, статус).",
-            "details": "",
-            "status": "done",
-            "dependencies": [
-              "14.2"
-            ],
-            "parentTaskId": 14
-          }
-        ]
-      },
-      {
-        "id": 15,
-        "title": "Refactor Data Model and Processing for Piping Line Numbers",
-        "description": "Rename the line_numbers table to ocr_results, create a new line_numbers table, and develop a script to populate it from a ground-truth file.",
-        "details": "Begin by renaming the existing 'line_numbers' table in the database to 'ocr_results' to better reflect its purpose of storing OCR data. Next, create a new 'line_numbers' table with the appropriate schema to store line numbers separately. This table should include fields such as 'line_id', 'document_id', 'line_number', and any other necessary metadata. Develop a script to read from a ground-truth file, which contains the correct line numbers, and populate the new 'line_numbers' table with this data. Ensure the script handles various file formats (e.g., CSV, JSON) and includes error handling for data inconsistencies. Update any existing database queries and API endpoints to reflect these changes.",
-        "testStrategy": "Verify the renaming of the table by checking the database schema. Test the creation of the new 'line_numbers' table by inserting sample data and querying it. Run the script with a sample ground-truth file and check that the data is correctly inserted into the 'line_numbers' table. Ensure that any API endpoints or database queries that previously used the 'line_numbers' table are updated and functioning correctly. Validate the script's error handling by providing malformed or incomplete ground-truth files and observing the error messages.",
-        "status": "pending",
-        "dependencies": [
-          14
-        ],
-        "priority": "medium",
-        "subtasks": [
-          {
-            "id": 1,
-            "title": "Migrate database: Rename line_numbers to ocr_results and create new line_numbers table",
-            "description": "",
-            "details": "",
-            "status": "done",
+            "title": "Настройка FastAPI эндпоинтов для получения и обновления данных о коррозионных петлях",
+            "description": "Разработать эндпоинты в FastAPI для получения списка петель и обновления их данных, включая информацию о цвете.",
+            "status": "pending",
             "dependencies": [],
-            "parentTaskId": 15
-          },
-          {
-            "id": 2,
-            "title": "Create script to populate new line_numbers table from ocr_results and a ground-truth file output/extracted_piping_lines.txt",
-            "description": "",
-            "details": "",
-            "status": "pending",
-            "dependencies": [
-              "15.1,15.5"
-            ],
-            "parentTaskId": 15
-          },
-          {
-            "id": 3,
-            "title": "Update FastAPI backend to serve data from the new line_numbers table",
-            "description": "",
-            "details": "",
-            "status": "done",
-            "dependencies": [
-              "15.1"
-            ],
-            "parentTaskId": 15
+            "details": "Создать эндпоинты в FastAPI, которые взаимодействуют с PostgreSQL базой данных для получения и обновления информации о коррозионных петлях.",
+            "testStrategy": ""
           },
           {
             "id": 4,
-            "title": "Update React frontend to fetch and display data from the new line_numbers table",
-            "description": "",
-            "details": "",
+            "title": "Интеграция данных о цвете петель в PDF рендеринг",
+            "description": "Обновить существующий механизм рендеринга PDF, чтобы отображать петли с их соответствующими цветами, полученными из базы данных.",
             "status": "pending",
             "dependencies": [
-              "15.3"
+              3
             ],
-            "parentTaskId": 15
+            "details": "Модифицировать текущий процесс рендеринга PDF, чтобы учитывать информацию о цвете петель, полученную из FastAPI эндпоинтов, и отображать их в соответствующих цветах на PDF.",
+            "testStrategy": ""
           },
           {
             "id": 5,
-            "title": "Populate ocr_results table with initial OCR data from data/pid_elements.json",
-            "description": "",
-            "details": "",
-            "status": "done",
+            "title": "Адаптация существующей системы для отображения corrosion loops",
+            "description": "Использовать существующие прямоугольники для отображения corrosion loops на PDF с использованием react-pdf-viewer и Fabric.js.",
+            "status": "pending",
             "dependencies": [],
-            "parentTaskId": 15
+            "details": "Интегрировать существующую систему прямоугольников с координатами для отображения corrosion loops, используя react-pdf-viewer и Fabric.js для аннотаций.",
+            "testStrategy": "Проверить корректность отображения corrosion loops на PDF с использованием существующих прямоугольников."
           },
           {
             "id": 6,
-            "title": "Run population script to fill the new line_numbers table",
-            "description": "",
-            "details": "",
+            "title": "Интеграция цветовой схемы с базой данных",
+            "description": "Обеспечить интеграцию цветовой схемы corrosion loops с базой данных для динамического отображения.",
             "status": "pending",
             "dependencies": [
-              "15.2"
+              3
             ],
-            "parentTaskId": 15
-          }
-        ]
-      },
-      {
-        "id": 16,
-        "title": "Implement Interactive P&ID Frame with Pan and Zoom",
-        "description": "Develop an interactive frame for P&ID diagrams with panning and zooming capabilities, maintaining A4 page size and interface element positions.",
-        "details": "Create an interactive frame for P&ID (Piping and Instrumentation Diagram) that supports panning and zooming. The frame should be set to an A4 page size. Implement panning functionality using a 'hand' tool that allows users to click and drag the diagram. Implement zooming functionality using the mouse wheel and +/- buttons, ensuring that the zoom level can be reset to the default state with a reset button. Ensure that other interface elements such as lists and buttons retain their positions during these interactions. Adjust rectangle coordinates dynamically during zoom to maintain correct positioning. The default cursor should be a 'hand' over the diagram and an 'arrow' over rectangles.",
-        "testStrategy": "Verify the frame is correctly sized to A4 dimensions. Test panning by dragging the diagram with the mouse and ensure smooth movement. Test zooming in and out using the mouse wheel and +/- buttons, and verify that the reset button returns the view to the original zoom level. Check that interface elements remain in place during interactions. Confirm that rectangle coordinates are recalculated correctly during zoom. Ensure the cursor changes appropriately between 'hand' and 'arrow' based on context.",
-        "status": "done",
-        "dependencies": [
-          14
-        ],
-        "priority": "high",
-        "subtasks": [
-          {
-            "id": 1,
-            "title": "Create A4 Frame Container",
-            "description": "Set up a container for the P&ID diagram with dimensions corresponding to an A4 page.",
-            "dependencies": [],
-            "details": "Use a suitable UI framework to create a container that matches the dimensions of an A4 page. Ensure the container can host the P&ID diagram and other interface elements.\n<info added on 2025-06-23T14:44:08.925Z>\nСоздан контейнер A4 для фрейма P&ID:\n\n**Что реализовано:**\n- Создан компонент PDFFrame с фиксированными размерами A4 (794x1123px при 96 DPI)\n- Добавлены CSS стили с поддержкой темной темы\n- Интегрирован в основной App.tsx компонент\n- Настроена координация событий с Fabric.js canvas (чтобы canvas мог обрабатывать клики по прямоугольникам)\n- Добавлена базовая панель управления с кнопками масштабирования\n\n**Технические детали:**\n- A4 размеры: 794px x 1123px (210mm x 297mm при 96 DPI)\n- Контейнер имеет overflow: hidden для обрезки содержимого\n- Добавлена логика предотвращения конфликтов между PDFFrame и Fabric.js событиями мыши\n- Стили адаптированы под светлую и темную темы\n\n**Файлы:**\n- app/src/components/PDFFrame.tsx - основной компонент\n- app/src/components/PDFFrame.css - стили\n- app/src/App.tsx - интеграция с основным приложением\n</info added on 2025-06-23T14:44:08.925Z>",
-            "status": "done",
-            "testStrategy": "Verify the container dimensions match A4 size and can host the diagram without overflow."
-          },
-          {
-            "id": 2,
-            "title": "Implement Panning Functionality",
-            "description": "Enable panning of the P&ID diagram using a 'hand' tool for click-and-drag interaction.",
-            "dependencies": [
-              1
-            ],
-            "details": "Add event listeners for mouse down, move, and up events to allow users to drag the diagram. Change the cursor to a 'hand' when over the diagram.\n<info added on 2025-06-23T14:49:48.060Z>\nПроблемы обнаружены:\n1. Фрейм был в вертикальной ориентации - исправлено на горизонтальную A4 (1123x794px)\n2. Перетаскивание не работало из-за конфликтов событий мыши\n\nИсправления:\n- Изменены размеры A4 на landscape ориентацию (1123x794px)\n- Переработана логика панорамирования - используются document-level события для лучшего отслеживания\n- Убрана неправильная логика применения панорамирования к координатам прямоугольников (теперь панорамирование обрабатывается через CSS transform)\n- Добавлена проверка клавиш Ctrl/Alt для предотвращения конфликтов с canvas событиями\n- Улучшены CSS стили для курсоров\n\nТехническая реализация:\n- document.addEventListener для mousemove/mouseup во время панорамирования\n- CSS transform применяется к pdf-frame-content\n- Курсор: grab/grabbing с наследованием для canvas\n</info added on 2025-06-23T14:49:48.060Z>\n<info added on 2025-06-23T14:57:19.304Z>\n🔧 Исправил конфликт с режимом рисования прямоугольников:\n\n**Проблема:** При клике и перетаскивании активировался режим рисования прямоугольника вместо панорамирования.\n\n**Решение:**\n1. Добавил состояние `isPanning` в App.tsx для отслеживания активного панорамирования\n2. Добавил callback `onPanningChange` в PDFFrame для уведомления родительского компонента\n3. Изменил логику режима рисования: `if (isDrawingMode && !isPanning)` - рисование отключается во время панорамирования\n4. Отключил обработку кликов canvas во время панорамирования: `if (isPanning) return;`\n5. Обновил зависимости useEffect для корректной работы\n\n**Техническая реализация:**\n- PDFFrame уведомляет App о состоянии панорамирования через callback\n- Режим рисования и клики canvas блокируются во время панорамирования  \n- Состояние синхронизируется между компонентами\n\nТеперь панорамирование должно работать без конфликтов с режимом рисования.\n</info added on 2025-06-23T14:57:19.304Z>\n<info added on 2025-06-23T15:05:24.613Z>\n✅ Панорамирование реализовано с правой кнопкой мыши!\n\n**Финальное решение:**\n1. **Убрали кнопку \"Draw Rectangle\"** и весь код режима рисования для устранения конфликтов\n2. **Переключили панорамирование на правую кнопку мыши** (button === 2)\n3. **Добавили preventDefault для контекстного меню** чтобы оно не появлялось при правом клике\n4. **Изменили курсоры:**\n   - По умолчанию: `default` (стрелка)\n   - Над прямоугольниками: `pointer` (рука с пальцем)\n   - При панорамировании: `grabbing` (сжатая рука)\n\n**Результат:**\n- ✅ Левая кнопка мыши - клики по прямоугольникам без конфликтов\n- ✅ Правая кнопка мыши - панорамирование схемы\n- ✅ Колесо мыши - масштабирование\n- ✅ Кнопки +/- и сброс - управление масштабом\n- ✅ Никаких случайных прямоугольников при перетаскивании\n\n**Техническая реализация:**\n- `onMouseDown` с проверкой `e.button === 2`\n- `onContextMenu` с `preventDefault()`\n- Удален весь код isDrawingMode и связанные useEffect\n</info added on 2025-06-23T15:05:24.613Z>",
-            "status": "done",
-            "testStrategy": "Test panning by dragging the diagram in various directions and ensure smooth movement."
-          },
-          {
-            "id": 3,
-            "title": "Implement Zooming with Mouse Wheel",
-            "description": "Enable zooming in and out of the P&ID diagram using the mouse wheel.",
-            "dependencies": [
-              1
-            ],
-            "details": "Attach event listeners to the mouse wheel to adjust the zoom level of the diagram. Ensure zooming is centered on the cursor position.",
-            "status": "done",
-            "testStrategy": "Test zooming in and out using the mouse wheel and verify the diagram scales correctly."
-          },
-          {
-            "id": 4,
-            "title": "Implement Zooming with Buttons",
-            "description": "Add +/- buttons to control zooming of the P&ID diagram.",
-            "dependencies": [
-              1
-            ],
-            "details": "Create UI buttons for zooming in and out. Attach event handlers to these buttons to adjust the zoom level incrementally.",
-            "status": "done",
-            "testStrategy": "Test zooming functionality using the buttons and ensure consistent behavior with mouse wheel zooming."
-          },
-          {
-            "id": 5,
-            "title": "Implement Zoom Reset Button",
-            "description": "Add a button to reset the zoom level to the default state.",
-            "dependencies": [
-              3,
-              4
-            ],
-            "details": "Create a reset button and attach an event handler to set the zoom level back to the initial state.",
-            "status": "done",
-            "testStrategy": "Test the reset button to ensure it returns the diagram to the default zoom level."
-          },
-          {
-            "id": 6,
-            "title": "Adjust Rectangle Coordinates on Zoom",
-            "description": "Ensure rectangle coordinates are dynamically adjusted during zoom to maintain correct positioning.",
-            "dependencies": [
-              3,
-              4
-            ],
-            "details": "Implement logic to recalculate rectangle positions based on the current zoom level, ensuring they remain correctly aligned with the diagram.\n<info added on 2025-06-23T15:09:35.246Z>\n✅ Реализован динамический пересчет координат прямоугольников + улучшение качества PDF при масштабировании!\n\n**Проблема:** При приближении качество PDF не улучшалось, текст был нечитаемым.\n\n**Решение:**\n1. **Добавлено состояние `pdfScale`** для отслеживания разрешения PDF\n2. **Динамическое изменение разрешения PDF** в зависимости от уровня масштабирования:\n   - `const newPdfScale = Math.min(Math.max(currentZoom, 1), 3)` \n   - Масштаб PDF изменяется от 1x до 3x в зависимости от zoom\n3. **Передача `scale={pdfScale}` в компонент Page** для увеличения разрешения рендеринга\n4. **Обновлены координаты прямоугольников** с учетом нового масштаба PDF:\n   - `line.x_coord / scale * pdfScale` - координаты масштабируются пропорционально\n5. **Добавлена зависимость `pdfScale` в useEffect** для перерисовки при изменении разрешения\n\n**Результат:**\n- ✅ При приближении качество PDF динамически улучшается\n- ✅ Текст остается четким и читаемым при любом уровне масштабирования  \n- ✅ Прямоугольники точно позиционируются относительно улучшенного PDF\n- ✅ Плавное изменение качества без скачков\n\n**Техническая реализация:**\n- useEffect с зависимостью от currentZoom обновляет pdfScale\n- React-PDF Page компонент получает динамический scale prop\n- Координаты аннотаций пересчитываются с учетом pdfScale\n</info added on 2025-06-23T15:09:35.246Z>",
-            "status": "done",
-            "testStrategy": "Test by zooming in and out and verifying that rectangles maintain their relative positions."
+            "details": "Настроить систему для получения и применения цветовой схемы corrosion loops из базы данных.",
+            "testStrategy": "Проверить корректность применения цветовой схемы из базы данных на PDF."
           },
           {
             "id": 7,
-            "title": "Maintain Interface Element Positions",
-            "description": "Ensure that interface elements such as lists and buttons retain their positions during panning and zooming.",
+            "title": "Добавление управления loops в интерфейс",
+            "description": "Добавить функциональность управления corrosion loops в пользовательский интерфейс.",
+            "status": "pending",
             "dependencies": [
-              2,
-              3,
-              4
+              1
             ],
-            "details": "Use fixed positioning or similar techniques to keep interface elements static relative to the container.",
-            "status": "done",
-            "testStrategy": "Test panning and zooming to ensure interface elements do not move unexpectedly."
-          },
-          {
-            "id": 8,
-            "title": "Implement Cursor Management",
-            "description": "Manage cursor changes between 'hand' over the diagram and 'arrow' over rectangles.",
-            "dependencies": [
-              2,
-              6
-            ],
-            "details": "Add logic to switch the cursor style based on the current mouse position relative to the diagram and rectangles.",
-            "status": "done",
-            "testStrategy": "Test cursor changes by moving the mouse over different areas of the diagram and rectangles."
+            "details": "Разработать интерфейс для управления corrosion loops, включая добавление, удаление и редактирование.",
+            "testStrategy": "Убедиться, что управление corrosion loops работает корректно и интуитивно для пользователя."
           }
         ]
       },
       {
-        "id": 17,
-        "title": "Add Touch Gesture Support for Mac and Windows Trackpads",
-        "description": "Implement touch gesture support for trackpads on Mac and Windows, including two-finger panning and pinch-to-zoom, with device type auto-detection.",
-        "details": "To enhance user interaction, implement touch gesture support for trackpads on both Mac and Windows systems. This includes enabling two-finger panning and pinch-to-zoom gestures. Begin by detecting the type of input device using platform-specific APIs or libraries. For Mac, consider using the NSEvent class for gesture recognition, and for Windows, explore the Windows.Devices.Input namespace. Ensure compatibility with existing mouse controls, where right-clicking allows panning. Integrate this functionality into the existing interactive frame developed in Task 16, ensuring seamless operation with the current panning and zooming features. Consider using a library like Hammer.js for cross-platform gesture recognition if applicable.",
-        "testStrategy": "Test the implementation on both Mac and Windows systems. Verify that two-finger panning moves the diagram smoothly and that pinch-to-zoom adjusts the zoom level correctly. Ensure that the device type is correctly detected and that mouse controls (right-click for panning) remain functional. Conduct user testing to confirm intuitive gesture recognition and responsiveness. Additionally, test the integration with the existing interactive frame to ensure no conflicts or performance issues arise.",
-        "status": "done",
+        "id": 8,
+        "title": "Develop PDF Export with Annotations",
+        "description": "Implement functionality to export PDFs with corrosion loop annotations and color coding.",
+        "details": "Create a FastAPI endpoint to generate annotated PDFs. Use a library like PyPDF2 to apply annotations and color coding. Ensure exported PDFs maintain visual integrity and annotations are accurate.",
+        "testStrategy": "Export annotated PDFs and verify the presence and accuracy of annotations. Test with different PDF viewers to ensure compatibility.",
+        "priority": "medium",
         "dependencies": [
-          16
+          5,
+          7
         ],
-        "priority": "high",
-        "subtasks": []
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Разработка FastAPI эндпоинта для генерации аннотированных PDF",
+            "description": "Создать новый эндпоинт в существующем FastAPI бэкенде, который будет принимать запросы на генерацию PDF с аннотациями.",
+            "dependencies": [],
+            "details": "Эндпоинт должен принимать данные о PDF и аннотациях, обрабатывать их и возвращать сгенерированный PDF файл.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Интеграция библиотеки PyPDF2 для добавления аннотаций в PDF",
+            "description": "Использовать PyPDF2 для добавления аннотаций и цветового кодирования в PDF файлы.",
+            "dependencies": [
+              1
+            ],
+            "details": "Реализовать функции для добавления различных типов аннотаций, таких как текстовые комментарии и выделения, с использованием PyPDF2.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Обеспечение визуальной целостности и точности экспортируемых PDF",
+            "description": "Гарантировать, что сгенерированные PDF файлы сохраняют визуальную целостность и точность аннотаций.",
+            "dependencies": [
+              2
+            ],
+            "details": "Провести тестирование сгенерированных PDF файлов для проверки корректности отображения аннотаций и общего оформления.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Адаптация существующего React фронтенда для поддержки аннотированных PDF",
+            "description": "Обновить текущий React фронтенд с PDF рендерингом для отображения аннотированных PDF файлов.",
+            "dependencies": [
+              3
+            ],
+            "details": "Внедрить поддержку отображения аннотаций в PDF viewer с масштабированием, используя существующую архитектуру.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 5,
+            "title": "Обновление схемы базы данных PostgreSQL для хранения информации об аннотациях",
+            "description": "Модифицировать существующую схему базы данных для хранения данных об аннотациях, связанных с PDF файлами.",
+            "dependencies": [
+              1
+            ],
+            "details": "Добавить новые таблицы или поля в существующие таблицы для хранения информации об аннотациях, включая их тип, позицию и связанный PDF файл.",
+            "status": "pending",
+            "testStrategy": ""
+          }
+        ]
       },
       {
-        "id": 18,
-        "title": "Add Mode Switch for Mouse/Touchpad Input",
-        "description": "Implement a mode switch to toggle between mouse and touchpad input modes, ensuring correct gesture recognition on various devices.",
-        "details": "To enhance input device compatibility, implement a mode switch that allows users to toggle between mouse and touchpad input modes. In touchpad mode, two-finger movements should trigger panning (wheel events) and pinch gestures should trigger zooming. In mouse mode, right-click should enable panning and the scroll wheel should control zooming. Address the specific issue with Huawei D16 touchpads where two-finger gestures are incorrectly recognized as wheel events. This may involve device-specific gesture recognition adjustments or overrides. Ensure the mode switch is easily accessible within the user interface, possibly as a toggle button or a settings option. Consider using platform-specific APIs to accurately detect and differentiate between input devices and their gestures, building upon the existing gesture support implemented in Task 17.",
-        "testStrategy": "Test the mode switch functionality on various devices, including standard mice and touchpads, as well as specific models like the Huawei D16. Verify that in touchpad mode, two-finger gestures correctly trigger panning and pinch gestures trigger zooming. In mouse mode, ensure right-click enables panning and the scroll wheel adjusts zoom levels. Specifically test the Huawei D16 to confirm that two-finger gestures are not misinterpreted as wheel events. Ensure the mode switch is intuitive and functions correctly across different platforms.",
-        "status": "done",
+        "id": 9,
+        "title": "Create Detailed API Documentation for OCR and Corrosion Loop Grouping",
+        "description": "Develop comprehensive API documentation for external OCR and corrosion loop grouping services.",
+        "details": "This task involves creating detailed documentation for the APIs that will be used for OCR and corrosion loop grouping. The documentation should include the following components: \n\n1. **API Specification for OCR Service**: Define the input and output data structures, including any necessary authentication details. Specify the endpoints, request methods, and expected responses. Include error handling and status codes.\n\n2. **API Specification for Corrosion Loop Grouping**: Similar to the OCR service, define the input and output data structures, endpoints, request methods, and expected responses. Include details on the algorithms and parameters used for grouping.\n\n3. **Sample Requests and Responses**: Provide examples of API requests and responses in JSON format for both services. These examples should cover typical use cases and edge cases.\n\n4. **Data Schemas**: Define the JSON schemas for the data structures used in both APIs, ensuring clarity and completeness.\n\n5. **Performance and Reliability Requirements**: Outline the expected performance metrics and reliability standards for both services, including response times and uptime requirements.\n\n6. **Integration Guide for External Teams**: Develop a comprehensive guide to assist external teams in integrating these APIs into their systems. This should include setup instructions, common pitfalls, and troubleshooting tips.",
+        "testStrategy": "To verify the documentation, perform the following steps:\n\n1. **Review by Technical Writers**: Have the documentation reviewed by technical writers to ensure clarity and completeness.\n\n2. **Peer Review by Developers**: Conduct a peer review with developers who will use these APIs to ensure the documentation meets their needs.\n\n3. **Mock Implementation**: Use the documentation to implement a mock client for both APIs, ensuring that all specified endpoints and data structures are correctly documented.\n\n4. **Feedback Loop**: Gather feedback from initial users of the documentation and make necessary adjustments to improve clarity and usability.",
+        "status": "pending",
         "dependencies": [
-          16,
-          17
+          4,
+          5
         ],
-        "priority": "high",
-        "subtasks": []
-      },
-      {
-        "id": 19,
-        "title": "Fix Pinch Gesture Handling in Touchpad Mode",
-        "description": "Resolve issues with pinch gestures in touchpad mode by preventing browser zoom and correctly handling pinch events within PDF frames.",
-        "details": "To address the pinch gesture issue in touchpad mode, first ensure that the browser's default zoom behavior is disabled. This can be achieved by adding a meta viewport tag with 'user-scalable=no' and setting maximum scale to 1. Additionally, implement CSS rules to prevent zooming, such as 'touch-action: none' on relevant elements. For handling pinch events within PDF frames, enhance the gesture detection logic to accurately differentiate between pinch and other gestures. This may involve using JavaScript libraries or APIs that provide more granular control over touch events. Ensure compatibility with existing gesture handling logic from Task 18 and Task 17, which implemented mode switching and touch gesture support.",
-        "testStrategy": "Test the implementation by using a touchpad on various devices to perform pinch gestures within a PDF frame. Verify that the browser does not zoom and that the pinch gesture is correctly detected and handled within the frame. Ensure that the changes do not interfere with other touch gestures implemented in Task 17 and Task 18. Conduct tests on different browsers to ensure cross-browser compatibility.",
-        "status": "done",
-        "dependencies": [
-          17,
-          18
-        ],
-        "priority": "high",
-        "subtasks": []
+        "priority": "medium",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Develop API Specification for OCR Service",
+            "description": "Create a comprehensive API specification for the OCR service, detailing input/output data structures, authentication methods, endpoints, request methods, expected responses, error handling, and status codes.",
+            "dependencies": [],
+            "details": "This subtask involves defining the API's structure and behavior, including data formats, authentication requirements, and error responses, to ensure clear communication and integration with external systems.",
+            "status": "pending",
+            "testStrategy": "Validate the API specification by creating mock requests and responses to ensure all defined behaviors and structures are correctly implemented."
+          },
+          {
+            "id": 2,
+            "title": "Develop API Specification for Corrosion Loop Grouping Service",
+            "description": "Create a comprehensive API specification for the corrosion loop grouping service, detailing input/output data structures, authentication methods, endpoints, request methods, expected responses, error handling, and status codes.",
+            "dependencies": [],
+            "details": "This subtask involves defining the API's structure and behavior, including data formats, authentication requirements, and error responses, to ensure clear communication and integration with external systems.",
+            "status": "pending",
+            "testStrategy": "Validate the API specification by creating mock requests and responses to ensure all defined behaviors and structures are correctly implemented."
+          },
+          {
+            "id": 3,
+            "title": "Provide Sample Requests and Responses",
+            "description": "Develop example API requests and responses in JSON format for both the OCR and corrosion loop grouping services, covering typical use cases and edge cases.",
+            "dependencies": [
+              1,
+              2
+            ],
+            "details": "This subtask involves creating practical examples to illustrate how the APIs should be used, aiding developers in understanding and implementing the services effectively.",
+            "status": "pending",
+            "testStrategy": "Review the sample requests and responses to ensure they accurately represent the API specifications and cover a range of scenarios."
+          },
+          {
+            "id": 4,
+            "title": "Define Data Schemas",
+            "description": "Establish clear and complete JSON schemas for the data structures used in both APIs to ensure consistency and clarity.",
+            "dependencies": [
+              1,
+              2
+            ],
+            "details": "This subtask involves specifying the structure, data types, and validation rules for the data exchanged through the APIs, facilitating accurate data handling and integration.",
+            "status": "pending",
+            "testStrategy": "Validate the data schemas by testing them against sample data to ensure they enforce the correct structure and constraints."
+          },
+          {
+            "id": 5,
+            "title": "Outline Performance and Reliability Requirements",
+            "description": "Specify the expected performance metrics and reliability standards for both services, including response times and uptime requirements.",
+            "dependencies": [],
+            "details": "This subtask involves defining measurable performance and reliability criteria to ensure the services meet operational expectations and provide a satisfactory user experience.",
+            "status": "pending",
+            "testStrategy": "Develop performance tests to measure response times and reliability tests to monitor uptime, ensuring the services meet the defined standards."
+          }
+        ]
       }
     ],
     "metadata": {
-      "created": "2025-06-21T07:11:24.410Z",
-      "updated": "2025-06-23T15:41:44.528Z",
-      "description": "Tasks for master context"
+      "created": "2025-06-23T17:53:34.761Z",
+      "updated": "2025-06-23T18:14:08.185Z",
+      "description": "Tasks for corrosion-loops context"
     }
   }
 }

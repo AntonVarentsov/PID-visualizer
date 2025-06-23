@@ -1,0 +1,28 @@
+Piping Line Numbers Extracted from test_pid.pdf_processed.json
+==================================================
+
+Total found: 23
+
+10"-FH-A1-14A
+10"-FH-A2-07
+10"-FH-A2-08
+10"-PL-A3-05
+2"-DC-A1-04
+2"-DC-A2-02
+2"-DC-A2-03
+2"-DC-A2-04
+2"-FH-A1-01
+2"-IA-C1-04
+2"-OL-A1-160
+3"-FH-A1-04
+3"-FH-A2-01
+3"-FH-A2-03
+3"-PW-A1-03
+6"-FH-A1-02
+6"-FH-A1-06
+6"-FH-A1-09
+6"-FH-A1-10
+6"-OL-A1-02
+6"-OL-A1-02A
+6"-OL-A2-08
+6"-PW-A2-02
