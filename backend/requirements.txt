@@ -1,7 +1,12 @@
 fastapi
-uvicorn
-SQLAlchemy
-# psycopg2-binary
+uvicorn[standard]
+SQLAlchemy>=2.0.0
+psycopg2-binary
 alembic
-pydantic
-python-multipart 
+pydantic>=2.0.0
+python-multipart
+google-cloud-vision
+Pillow
+PyPDF2
+pdf2image
+python-dotenv 

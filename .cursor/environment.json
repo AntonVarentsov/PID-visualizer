@@ -1,0 +1,127 @@
+{
+  "name": "PID Visualizer",
+  "description": "P&ID диаграммы с визуализацией corrosion loops",
+  "version": "1.0.0",
+  "dependencies": {
+    "system": [
+      "node>=18.0.0",
+      "python>=3.9",
+      "pip>=21.0"
+    ],
+    "python": {
+      "requirements_file": "backend/requirements.txt",
+      "packages": [
+        "fastapi",
+        "uvicorn[standard]",
+        "SQLAlchemy>=2.0.0",
+        "psycopg2-binary",
+        "alembic",
+        "pydantic>=2.0.0",
+        "python-multipart",
+        "google-cloud-vision",
+        "Pillow",
+        "PyPDF2",
+        "pdf2image"
+      ]
+    },
+    "node": {
+      "root_packages": [
+        "concurrently"
+      ],
+      "frontend_packages": [
+        "react",
+        "react-dom", 
+        "react-pdf",
+        "fabric",
+        "pdfjs-dist",
+        "@types/fabric",
+        "@types/react",
+        "@types/react-dom",
+        "vite",
+        "typescript",
+        "eslint"
+      ]
+    }
+  },
+  "scripts": {
+    "setup": {
+      "description": "Полная установка проекта",
+      "commands": [
+        "npm install",
+        "cd backend && python -m venv venv",
+        "cd backend && .\\venv\\Scripts\\activate && pip install -r requirements.txt",
+        "cd app && npm install"
+      ]
+    },
+    "dev": {
+      "description": "Запуск в режиме разработки", 
+      "commands": [
+        "npm run dev"
+      ]
+    },
+    "dev:backend": {
+      "description": "Запуск только backend",
+      "commands": [
+        "cd backend && .\\venv\\Scripts\\activate && uvicorn main:app --reload --host 0.0.0.0"
+      ]
+    },
+    "dev:frontend": {
+      "description": "Запуск только frontend",
+      "commands": [
+        "cd app && npm run dev"
+      ]
+    },
+    "install:backend": {
+      "description": "Установка зависимостей backend",
+      "commands": [
+        "cd backend && python -m venv venv",
+        "cd backend && .\\venv\\Scripts\\activate && pip install -r requirements.txt"
+      ]
+    },
+    "install:frontend": {
+      "description": "Установка зависимостей frontend",
+      "commands": [
+        "cd app && npm install"
+      ]
+    }
+  },
+  "environment": {
+    "DATABASE_URL": "sqlite:///./pid_visualizer.db",
+    "GOOGLE_APPLICATION_CREDENTIALS": "./path/to/service-account-key.json",
+    "VITE_API_BASE_URL": "http://localhost:8000"
+  },
+  "development": {
+    "ports": {
+      "backend": 8000,
+      "frontend": 5173
+    },
+    "watch_patterns": [
+      "backend/**/*.py",
+      "app/src/**/*.{ts,tsx,js,jsx}",
+      "app/**/*.html"
+    ]
+  },
+  "architecture": {
+    "backend": {
+      "framework": "FastAPI",
+      "database": "SQLite/PostgreSQL", 
+      "orm": "SQLAlchemy",
+      "python_version": "3.9+",
+      "location": "./backend/"
+    },
+    "frontend": {
+      "framework": "React + TypeScript",
+      "bundler": "Vite",
+      "ui_libraries": ["Fabric.js", "react-pdf"],
+      "location": "./app/"
+    }
+  },
+  "features": [
+    "PDF viewing and annotation",
+    "OCR with Google Cloud Vision",
+    "Corrosion loop grouping",
+    "Project management",
+    "Multi-file upload",
+    "Drag-and-drop interface"
+  ]
+} 
