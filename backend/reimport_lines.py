@@ -2,7 +2,7 @@ import os
 from typing import List
 from database import SessionLocal
 import crud
-from backend import schemas
+import schemas
 from models import OcrResult
 
 # The ID of the document we are processing.

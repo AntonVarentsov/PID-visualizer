@@ -2,7 +2,7 @@ import json
 import os
 from database import SessionLocal
 import crud
-from backend import schemas
+import schemas
 
 def parse_document_ai_and_import():
     """
