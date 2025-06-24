@@ -3,9 +3,9 @@ from sqlalchemy.orm import Session
 from fastapi.middleware.cors import CORSMiddleware
 import json
 
-import crud
-import models
-import schemas
+from backend import crud
+from backend import models
+from backend import schemas
 from database import SessionLocal, engine
 
 # This will now check if the tables exist before trying to create them.

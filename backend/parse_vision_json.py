@@ -2,7 +2,7 @@ import json
 import os
 from database import SessionLocal
 import crud
-import schemas
+from backend import schemas
 
 # The ID of the document we want to import lines for.
 DOCUMENT_ID = 1

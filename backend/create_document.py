@@ -1,6 +1,6 @@
 from database import SessionLocal
 import crud
-import schemas
+from backend import schemas
 
 def create_test_document():
     """

@@ -1357,11 +1357,24 @@
             "testStrategy": "Develop performance tests to measure response times and reliability tests to monitor uptime, ensuring the services meet the defined standards."
           }
         ]
+      },
+      {
+        "id": 10,
+        "title": "Implement Basic Unit Tests for Backend",
+        "description": "Create and integrate basic unit tests for backend models, CRUD operations, and Pydantic schemas using pytest and in-memory SQLite.",
+        "details": "Develop unit tests for the backend components focusing on data models (Document, OcrResult, LineNumber), CRUD operations, and Pydantic schemas (DocumentCreate, OcrResultCreate, LineNumberCreate). Use pytest as the testing framework and configure an in-memory SQLite database for testing purposes. Ensure that all tests are placed in the 'backend/tests/' directory. The goal is to establish a foundational test suite that ensures the reliability of these components and facilitates further development, particularly in the area of corrosion loops. Consider edge cases and error handling in your tests to ensure robustness.",
+        "testStrategy": "1. Set up pytest in the project if not already configured.\n2. Create test files in the 'backend/tests/' directory for each component: models, CRUD operations, and Pydantic schemas.\n3. Write tests for each data model to verify field integrity and relationships.\n4. Implement CRUD operation tests to ensure all create, read, update, and delete functionalities work as expected.\n5. Validate Pydantic schemas by testing data validation and serialization.\n6. Run all tests using pytest and ensure they pass without errors.\n7. Review test coverage reports to ensure adequate coverage of all critical paths.",
+        "status": "pending",
+        "dependencies": [
+          2
+        ],
+        "priority": "high",
+        "subtasks": []
       }
     ],
     "metadata": {
       "created": "2025-06-23T17:53:34.761Z",
-      "updated": "2025-06-24T06:35:19.570Z",
+      "updated": "2025-06-24T07:10:05.236Z",
       "description": "Tasks for corrosion-loops context"
     }
   }

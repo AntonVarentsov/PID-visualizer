@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session, joinedload
-import models, schemas
+from backend import models
+from backend import schemas
 
 # --- Document CRUD ---
 
