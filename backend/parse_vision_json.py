@@ -1,8 +1,7 @@
 import json
 import os
-from database import SessionLocal
-import crud
-import schemas
+from backend.database import SessionLocal
+from backend import crud, schemas
 
 # The ID of the document we want to import lines for.
 DOCUMENT_ID = 1
