@@ -2,9 +2,9 @@ const fs = require('fs').promises;
 const path = require('path');
 const chokidar = require('chokidar');
 const axios = require('axios');
-
-const dataDir = path.join(__dirname, '..', 'data');
-const API_BASE_URL = 'http://localhost:8000';
+require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
+const dataDir = process.env.DATA_DIR || path.join(__dirname, '..', 'data');
+const API_BASE_URL = process.env.API_BASE_URL || 'http://localhost:8000';
 
 console.log(`Watching for file changes in ${dataDir}`);
 
