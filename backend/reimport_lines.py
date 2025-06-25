@@ -1,42 +1,13 @@
 import os
-from typing import List
-from database import SessionLocal
-import crud
-import schemas
-from models import OcrResult
+from backend.database import SessionLocal
+from backend import crud
+from backend.parsers import document_ai
 
 # The ID of the document we are processing.
 DOCUMENT_ID = 1
 # Path to the text file containing the target line numbers.
 TARGET_LINES_PATH = os.path.join(os.path.dirname(__file__), '..', 'data', 'extracted_piping_lines.txt')
 
-
-def filter_line_numbers(ocr_results: List[OcrResult], target_texts: List[str]) -> List[OcrResult]:
-    """
-    Filters OCR results to find those that exactly match the target texts.
-
-    In the future, this function can be modified to use regular expressions
-    or more complex matching logic.
-
-    Args:
-        ocr_results: A list of OcrResult objects from the database.
-        target_texts: A list of strings to search for.
-
-    Returns:
-        A list of matching OcrResult objects.
-    """
-    print(f"Filtering {len(ocr_results)} OCR results against {len(target_texts)} target texts.")
-    
-    # Create a set for faster lookups
-    target_set = set(t.strip() for t in target_texts if t.strip())
-    
-    found_results = []
-    for result in ocr_results:
-        if result.text and result.text.strip() in target_set:
-            found_results.append(result)
-            
-    print(f"Found {len(found_results)} matching line numbers.")
-    return found_results
 
 
 def reimport_lines_from_db():
@@ -66,30 +37,9 @@ def reimport_lines_from_db():
             print("No target line numbers found in the file.")
             return
 
-        # 3. Get all OCR results from the database for the document
-        print("Fetching all OCR results from the database...")
-        all_ocr_results = crud.get_all_ocr_results_for_document(db=db, document_id=DOCUMENT_ID)
-        if not all_ocr_results:
-            print("No OCR results found in the database for this document.")
-            return
-
-        # 4. Filter the results
-        matched_results = filter_line_numbers(all_ocr_results, target_texts)
-
-        # 5. Create new LineNumber entries from the filtered results
-        for ocr_result in matched_results:
-            line_create_schema = schemas.LineNumberCreate(
-                page=ocr_result.page,
-                text=ocr_result.text,
-                x_coord=ocr_result.x_coord,
-                y_coord=ocr_result.y_coord,
-                width=ocr_result.width,
-                height=ocr_result.height,
-                status="pending"  # Or copy from ocr_result if needed
-            )
-            crud.create_line_number(db=db, line_number=line_create_schema, document_id=DOCUMENT_ID)
-
-        print(f"Successfully created {len(matched_results)} new line number entries.")
+        # 3. Create line numbers from existing OCR results
+        created = document_ai.create_line_numbers(db, target_texts, DOCUMENT_ID)
+        print(f"Successfully created {created} new line number entries.")
 
     except Exception as e:
         print(f"An error occurred during re-import: {e}")
