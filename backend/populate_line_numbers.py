@@ -3,8 +3,8 @@ import os
 from sqlalchemy.orm import Session
 
 
-from backend import crud, schemas
 from backend.database import SessionLocal, engine
+from backend.parsers import document_ai
 
 def get_db():
     db = SessionLocal()
@@ -30,34 +30,8 @@ def populate_line_numbers_from_file(db: Session, document_id: int, ground_truth_
         print(f"Error: Ground truth file not found at {ground_truth_file}")
         return
 
-    # 2. Get all OCR results for the document from the database
-    # Assuming ocr_results are already populated from populate_db.py
-    ocr_results = db.query(crud.models.OcrResult).filter(crud.models.OcrResult.document_id == document_id).all()
-    if not ocr_results:
-        print("No OCR results found in the database for this document. Please run populate_db.py first.")
-        return
-        
-    ocr_map = {result.text: result for result in ocr_results}
-    print(f"Found {len(ocr_map)} unique OCR results in the database.")
-
-    # 3. Match and create new line number entries
-    lines_created_count = 0
-    for line_text in true_lines:
-        if line_text in ocr_map:
-            ocr_match = ocr_map[line_text]
-            line_number_create = schemas.LineNumberCreate(
-                text=ocr_match.text,
-                x_coord=ocr_match.x_coord,
-                y_coord=ocr_match.y_coord,
-                width=ocr_match.width,
-                height=ocr_match.height,
-                status="pending" # Or any other default status
-            )
-            crud.create_line_number(db=db, line_number=line_number_create, document_id=document_id)
-            lines_created_count += 1
-        else:
-            print(f"Warning: Line number '{line_text}' from ground truth file not found in OCR results.")
-
+    # 2. Create line number entries from existing OCR results
+    lines_created_count = document_ai.create_line_numbers(db, true_lines, document_id)
     print(f"Successfully created {lines_created_count} new entries in the line_numbers table.")
 
 
