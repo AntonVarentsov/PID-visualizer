@@ -1,9 +1,7 @@
 import os
-import sys
+
 from sqlalchemy.orm import Session
 
-# Add the parent directory to the sys.path to allow for package imports
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from backend import crud, schemas
 from backend.database import SessionLocal, engine

@@ -1,8 +1,7 @@
 import json
 import os
-from database import SessionLocal
-import crud
-import schemas
+from backend.database import SessionLocal
+from backend import crud, schemas
 
 def parse_document_ai_and_import():
     """

@@ -1,9 +1,8 @@
 import os
 from typing import List
-from database import SessionLocal
-import crud
-import schemas
-from models import OcrResult
+from backend.database import SessionLocal
+from backend import crud, schemas
+from backend.models import OcrResult
 
 # The ID of the document we are processing.
 DOCUMENT_ID = 1
