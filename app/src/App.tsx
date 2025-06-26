@@ -74,7 +74,8 @@ function App() {
       });
 
       try {
-        const response = await fetch('http://localhost:8000/doc/1');
+        const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+        const response = await fetch(`${apiBaseUrl}/doc/1`);
         if (!response.ok) {
           throw new Error(`Network response was not ok: ${response.statusText}`);
         }
