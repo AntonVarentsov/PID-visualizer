@@ -1,9 +1,14 @@
 const http = require('http');
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '.env') });
+
+const API_BASE_URL = process.env.API_BASE_URL || 'http://localhost:8000';
+const url = new URL('/doc/1', API_BASE_URL);
 
 const options = {
-  hostname: 'localhost',
-  port: 8000,
-  path: '/doc/1',
+  hostname: url.hostname,
+  port: url.port || 80,
+  path: url.pathname,
   method: 'GET'
 };
 
