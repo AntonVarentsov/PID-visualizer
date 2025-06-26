@@ -14,3 +14,16 @@ engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args=connect_args)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
+
+from contextlib import contextmanager
+
+
+@contextmanager
+def get_session():
+    """Provide a transactional scope around a series of operations."""
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+

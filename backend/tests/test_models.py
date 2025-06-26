@@ -18,12 +18,14 @@ def db_session(db_engine):
     yield session
     session.close()
 
+
 def test_document_creation(db_session):
     doc = Document(file_name="test.pdf", pages=1)
     db_session.add(doc)
     db_session.commit()
     assert doc.id is not None
     assert doc.file_name == "test.pdf"
+
 
 def test_ocr_result_creation(db_session):
     doc = Document(file_name="test2.pdf", pages=2)
@@ -35,6 +37,7 @@ def test_ocr_result_creation(db_session):
     assert ocr.id is not None
     assert ocr.document_id == doc.id
 
+
 def test_line_number_creation(db_session):
     doc = Document(file_name="test3.pdf", pages=3)
     db_session.add(doc)
@@ -43,4 +46,4 @@ def test_line_number_creation(db_session):
     db_session.add(line)
     db_session.commit()
     assert line.id is not None
-    assert line.document_id == doc.id 
+    assert line.document_id == doc.id

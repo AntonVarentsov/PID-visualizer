@@ -3,15 +3,14 @@ import os
 from sqlalchemy.orm import Session
 
 
-from backend.database import SessionLocal, engine
-from backend.parsers import document_ai
+from backend.database import get_session
+from backend.ocr import load_parser
+
+parser = load_parser("document_ai")
 
 def get_db():
-    db = SessionLocal()
-    try:
+    with get_session() as db:
         yield db
-    finally:
-        db.close()
 
 def populate_line_numbers_from_file(db: Session, document_id: int, ground_truth_file: str, ocr_results_file: str):
     """
@@ -31,20 +30,23 @@ def populate_line_numbers_from_file(db: Session, document_id: int, ground_truth_
         return
 
     # 2. Create line number entries from existing OCR results
-    lines_created_count = document_ai.create_line_numbers(db, true_lines, document_id)
+    lines_created_count = parser.create_line_numbers(db, true_lines, document_id)
     print(f"Successfully created {lines_created_count} new entries in the line_numbers table.")
 
 
 if __name__ == "__main__":
-    db_session = next(get_db())
-    
-    # Assuming document with ID=1 exists from running populate_db.py
-    doc_id = 1
-    
-    # Define paths relative to the project root
-    truth_file = os.path.join('output', 'extracted_piping_lines.txt')
-    ocr_file = os.path.join('data', 'test_pid.pdf_processed.json') # Used for populating ocr_results
+    with get_session() as db_session:
+        # Assuming document with ID=1 exists from running populate_db.py
+        doc_id = 1
 
-    populate_line_numbers_from_file(db=db_session, document_id=doc_id, ground_truth_file=truth_file, ocr_results_file=ocr_file)
-    
-    db_session.close() 
+        # Define paths relative to the project root
+        truth_file = os.path.join('output', 'extracted_piping_lines.txt')
+        ocr_file = os.path.join('data', 'test_pid.pdf_processed.json')  # Used for populating ocr_results
+
+        populate_line_numbers_from_file(
+            db=db_session,
+            document_id=doc_id,
+            ground_truth_file=truth_file,
+            ocr_results_file=ocr_file,
+        )
+
