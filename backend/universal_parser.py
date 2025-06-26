@@ -2,7 +2,9 @@ import os
 import json
 from backend.database import get_session
 from backend import crud, schemas
-from backend.parsers import document_ai
+from backend.ocr import load_parser
+
+parser = load_parser("document_ai")
 
 def parse_document_ai_and_import():
     """
@@ -39,7 +41,7 @@ def parse_document_ai_and_import():
             # 3. Load the Document AI JSON and import OCR results
             print(f"Loading Document AI JSON from {json_path}...")
             try:
-                doc_ai_data = document_ai.load_json(json_path)
+                doc_ai_data = parser.parse(json_path)
             except FileNotFoundError:
                 print(f"Error: JSON file not found at {json_path}")
                 return
@@ -49,7 +51,7 @@ def parse_document_ai_and_import():
             print("JSON loaded successfully.")
     
             print("Importing OCR results into the database...")
-            new_results_count = document_ai.create_ocr_results(db, doc_ai_data, DOCUMENT_ID)
+            new_results_count = parser.create_ocr_results(db, doc_ai_data, DOCUMENT_ID)
             print(
                 f"Successfully added {new_results_count} unique OCR results to document ID: {DOCUMENT_ID}."
             )
@@ -91,7 +93,7 @@ def parse_line_numbers():
             print(f"Found {len(target_lines)} target line numbers to process.")
     
             # 3. Create line numbers from OCR results
-            lines_created = document_ai.create_line_numbers(db, target_lines, DOCUMENT_ID)
+            lines_created = parser.create_line_numbers(db, target_lines, DOCUMENT_ID)
             print(f"Successfully created {lines_created} entries in the line_numbers table.")
     
         except Exception as e:
