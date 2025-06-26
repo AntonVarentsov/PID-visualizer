@@ -1,25 +1,35 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+
 from backend import models
 from backend.database import engine
-from backend.routers import documents, lines
+from backend.routers import documents_router, lines_router, ocr_router
 
-models.Base.metadata.create_all(bind=engine, checkfirst=True)
 
-app = FastAPI()
+def create_app() -> FastAPI:
+    """Application factory."""
+    models.Base.metadata.create_all(bind=engine, checkfirst=True)
 
-origins = [
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-]
+    app = FastAPI()
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+    origins = [
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+    ]
 
-app.include_router(documents.router)
-app.include_router(lines.router)
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=origins,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+
+    app.include_router(documents_router)
+    app.include_router(lines_router)
+    app.include_router(ocr_router)
+
+    return app
+
+
+app = create_app()
