@@ -3,7 +3,9 @@ import os
 
 from backend import crud, schemas
 from backend.database import get_session
-from backend.parsers import document_ai
+from backend.ocr import load_parser
+
+parser = load_parser("document_ai")
 
 def parse_and_populate_all():
     """
@@ -38,7 +40,7 @@ def parse_and_populate_all():
             # --- Step 3: Load the Document AI JSON and populate OCR results ---
             print(f"Loading Document AI JSON from {json_path}...")
             try:
-                doc_ai_data = document_ai.load_json(json_path)
+                doc_ai_data = parser.parse(json_path)
             except FileNotFoundError:
                 print(f"FATAL: JSON file not found at {json_path}")
                 return
@@ -47,7 +49,7 @@ def parse_and_populate_all():
                 return
             print("JSON loaded successfully.")
     
-            created_count = document_ai.create_ocr_results(db, doc_ai_data, DOCUMENT_ID)
+            created_count = parser.create_ocr_results(db, doc_ai_data, DOCUMENT_ID)
             print(f"Populated ocr_results table with {created_count} entries.")
     
             # --- Step 5: Populate line_numbers from ground truth ---
@@ -56,7 +58,7 @@ def parse_and_populate_all():
             with open(truth_file_path, 'r') as f:
                 target_lines = [line.strip() for line in f.readlines()[4:] if line.strip()]
     
-            lines_created_count = document_ai.create_line_numbers(db, target_lines, DOCUMENT_ID)
+            lines_created_count = parser.create_line_numbers(db, target_lines, DOCUMENT_ID)
             print(f"Successfully created {lines_created_count} entries in line_numbers table.")
     
             print("\n--- Import Complete ---")

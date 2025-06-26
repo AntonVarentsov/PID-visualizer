@@ -1,7 +1,9 @@
 import os
 from backend.database import get_session
 from backend import crud
-from backend.parsers import document_ai
+from backend.ocr import load_parser
+
+parser = load_parser("document_ai")
 
 # The ID of the document we are processing.
 DOCUMENT_ID = 1
@@ -38,7 +40,7 @@ def reimport_lines_from_db():
                 return
     
             # 3. Create line numbers from existing OCR results
-            created = document_ai.create_line_numbers(db, target_texts, DOCUMENT_ID)
+            created = parser.create_line_numbers(db, target_texts, DOCUMENT_ID)
             print(f"Successfully created {created} new line number entries.")
     
         except Exception as e:

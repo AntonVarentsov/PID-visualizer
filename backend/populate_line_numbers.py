@@ -4,7 +4,9 @@ from sqlalchemy.orm import Session
 
 
 from backend.database import get_session
-from backend.parsers import document_ai
+from backend.ocr import load_parser
+
+parser = load_parser("document_ai")
 
 def get_db():
     with get_session() as db:
@@ -28,7 +30,7 @@ def populate_line_numbers_from_file(db: Session, document_id: int, ground_truth_
         return
 
     # 2. Create line number entries from existing OCR results
-    lines_created_count = document_ai.create_line_numbers(db, true_lines, document_id)
+    lines_created_count = parser.create_line_numbers(db, true_lines, document_id)
     print(f"Successfully created {lines_created_count} new entries in the line_numbers table.")
 
 
