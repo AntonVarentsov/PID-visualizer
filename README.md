@@ -43,3 +43,18 @@ The repository includes a helper script that monitors the `data` directory and s
 ```bash
 node file-watcher/index.js
 ```
+
+## Extending OCR parsers
+
+OCR parsing is pluggable. The name of the parser is configured via the
+`ocr_parser` option in `backend/config.py` (or the `OCR_PARSER` environment
+variable). Parsers are discovered through the `pid_visualizer.ocr_parsers`
+entry point group. Packages can expose a parser like so:
+
+```ini
+[options.entry_points]
+pid_visualizer.ocr_parsers =
+    custom = myproject.parsers:CustomParser
+```
+
+Install the package and set `OCR_PARSER=custom` to activate it.

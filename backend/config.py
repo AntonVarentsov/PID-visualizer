@@ -9,6 +9,7 @@ class Settings(BaseSettings):
     data_dir: str = "./data"
     debug: bool = False
     log_level: str = "INFO"
+    ocr_parser: str = "document_ai"
     
     # Дополнительные переменные окружения
     google_application_credentials: str = ""

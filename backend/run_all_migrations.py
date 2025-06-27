@@ -4,8 +4,9 @@ import os
 from backend import crud, schemas
 from backend.database import get_session
 from backend.ocr import load_parser
+from backend.config import get_settings
 
-parser = load_parser("document_ai")
+parser = load_parser(get_settings().ocr_parser)
 
 def parse_and_populate_all():
     """
