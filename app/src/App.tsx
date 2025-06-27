@@ -27,7 +27,7 @@ function App() {
   const [highlightedId, setHighlightedId] = useState<number | null>(null);
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [currentZoom, setCurrentZoom] = useState<number>(1);
-  const [currentPan, setCurrentPan] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  // Pan state is managed internally by PDFFrame
   const [isPanning, setIsPanning] = useState<boolean>(false);
   const [pdfScale, setPdfScale] = useState<number>(1);
 
@@ -242,7 +242,7 @@ function App() {
       <div style={{ display: 'flex' }}>
                 <PDFFrame
           onZoomChange={setCurrentZoom}
-          onPanChange={(x, y) => setCurrentPan({ x, y })}
+          onPanChange={(_x, _y) => {/* Pan handled internally */}}
           onPanningChange={setIsPanning}
         >
           <div ref={mainContainerRef} style={{ position: 'relative' }}>
