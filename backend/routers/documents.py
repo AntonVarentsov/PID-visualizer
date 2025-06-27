@@ -16,10 +16,6 @@ def read_document(doc_id: int, db: Session = Depends(get_db)):
     service = DocumentService(db)
     return service.get_document(doc_id)
 
-@router.post("/documents/{doc_id}/parse-json")
-def parse_json_for_document(doc_id: int, data: dict, db: Session = Depends(get_db)):
-    service = DocumentService(db)
-    return service.parse_json(doc_id, data)
 
 @router.get("/")
 def read_root():
