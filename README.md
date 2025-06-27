@@ -4,11 +4,15 @@ This project consists of a FastAPI backend and a React frontend. Follow the step
 
 ## Installation
 
-1. **Install Python dependencies**
+1. **Create and activate a virtual environment**
+   ```bash
+   python -m venv venv && source venv/bin/activate
+   ```
+2. **Install Python dependencies**
    ```bash
    pip install -r backend/requirements.txt
    ```
-2. **Install frontend dependencies**
+3. **Install frontend dependencies**
    ```bash
    cd app && npm install
    ```

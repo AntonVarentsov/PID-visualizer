@@ -6,7 +6,7 @@
   "scripts": {
     "postinstall": "cd app && npm install",
     "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
-    "dev:backend": ".\\\\backend\\\\venv\\\\Scripts\\\\activate && uvicorn backend.main:app --reload --host 0.0.0.0",
+    "dev:backend": "uvicorn backend.main:app --reload --host 0.0.0.0",
     "dev:frontend": "cd app && npm run dev"
   },
   "keywords": [],
