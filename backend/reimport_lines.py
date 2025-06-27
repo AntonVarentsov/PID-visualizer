@@ -2,8 +2,9 @@ import os
 from backend.database import get_session
 from backend import crud
 from backend.ocr import load_parser
+from backend.config import get_settings
 
-parser = load_parser("document_ai")
+parser = load_parser(get_settings().ocr_parser)
 
 # The ID of the document we are processing.
 DOCUMENT_ID = 1
