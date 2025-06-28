@@ -130,6 +130,19 @@ export const usePdfPanZoom = ({
     };
   }, [isPanning, lastPanPoint]);
 
+  // Reset state when switching input modes
+  useEffect(() => {
+    setIsPanning(false);
+    setTouchState({
+      initialDistance: 0,
+      initialZoom: 1,
+      lastTouchCount: 0,
+      centerPoint: { x: 0, y: 0 },
+      lastPanPoint: { x: 0, y: 0 },
+      isTouchPanning: false
+    });
+  }, [inputMode]);
+
   // Utility functions for touch handling
   const getTouchDistance = (touch1: React.Touch, touch2: React.Touch) => {
     const deltaX = touch1.clientX - touch2.clientX;
@@ -153,47 +166,23 @@ export const usePdfPanZoom = ({
     const rect = frameRef.current?.getBoundingClientRect();
     if (!rect) return;
 
-    // In trackpad mode, handle wheel events differently
-    if (inputMode === 'trackpad') {
-      // Pinch detection: only ctrlKey indicates true pinch gesture
-      if (e.ctrlKey) {
-        // Pinch gesture - zoom
-        const mouseX = e.clientX - rect.left;
-        const mouseY = e.clientY - rect.top;
-        
-        const delta = -e.deltaY * 0.003; // Sensitivity for trackpad pinch
-        const newZoom = Math.max(0.1, Math.min(5, zoom + delta));
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
 
-        // Calculate zoom center relative to current pan position
-        const zoomFactor = newZoom / zoom;
-        
-        // Adjust pan to zoom towards mouse position
-        const newPanX = mouseX - (mouseX - panX) * zoomFactor;
-        const newPanY = mouseY - (mouseY - panY) * zoomFactor;
-
-        setZoom(newZoom);
-        setPanX(newPanX);
-        setPanY(newPanY);
-      } else {
-        // Two-finger scroll - pan in both directions
-        const deltaX = -e.deltaX * 1.5; // Horizontal pan
-        const deltaY = -e.deltaY * 1.5; // Vertical pan
-        
-        setPanX(prev => prev + deltaX);
-        setPanY(prev => prev + deltaY);
-      }
+    // Simplified logic: wheel always zooms unless explicitly pan mode
+    if (inputMode === 'trackpad' && !e.ctrlKey && (e.deltaX !== 0 || Math.abs(e.deltaY) < 10)) {
+      // Trackpad pan mode - horizontal scroll or small vertical scroll
+      const deltaX = -e.deltaX * 1.5;
+      const deltaY = -e.deltaY * 1.5;
+      
+      setPanX(prev => prev + deltaX);
+      setPanY(prev => prev + deltaY);
     } else {
-      // Mouse mode - wheel always zooms
-      const mouseX = e.clientX - rect.left;
-      const mouseY = e.clientY - rect.top;
-
-      const delta = -e.deltaY * 0.001;
+      // Zoom mode (mouse wheel or trackpad pinch)
+      const delta = -e.deltaY * 0.002;
       const newZoom = Math.max(0.1, Math.min(5, zoom + delta));
 
-      // Calculate zoom center relative to current pan position
       const zoomFactor = newZoom / zoom;
-      
-      // Adjust pan to zoom towards mouse position
       const newPanX = mouseX - (mouseX - panX) * zoomFactor;
       const newPanY = mouseY - (mouseY - panY) * zoomFactor;
 
@@ -229,6 +218,9 @@ export const usePdfPanZoom = ({
 
   // Handle touch start
   const handleTouchStart = (e: React.TouchEvent) => {
+    // Only handle touch events in trackpad mode
+    if (inputMode !== 'trackpad') return;
+    
     e.preventDefault();
     
     const touches = Array.from(e.touches);
@@ -263,6 +255,9 @@ export const usePdfPanZoom = ({
 
   // Handle touch move
   const handleTouchMove = (e: React.TouchEvent) => {
+    // Only handle touch events in trackpad mode
+    if (inputMode !== 'trackpad') return;
+    
     e.preventDefault();
     
     const touches = Array.from(e.touches);
@@ -318,6 +313,9 @@ export const usePdfPanZoom = ({
 
   // Handle touch end
   const handleTouchEnd = (e: React.TouchEvent) => {
+    // Only handle touch events in trackpad mode
+    if (inputMode !== 'trackpad') return;
+    
     e.preventDefault();
     
     const remainingTouches = e.touches.length;
