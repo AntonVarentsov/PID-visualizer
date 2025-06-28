@@ -291,8 +291,13 @@ export const usePdfPanZoom = ({
         setPanY(newPanY);
       }
       
-      // Handle two-finger panning (only after initial pinch is processed)
-      if (!touchState.isTouchPanning && Math.abs(currentCenter.x - touchState.lastPanPoint.x) > 5) {
+      // Handle two-finger panning - check movement in both X and Y
+      const centerMovement = Math.sqrt(
+        Math.pow(currentCenter.x - touchState.lastPanPoint.x, 2) + 
+        Math.pow(currentCenter.y - touchState.lastPanPoint.y, 2)
+      );
+      
+      if (!touchState.isTouchPanning && centerMovement > 5) {
         setTouchState(prev => ({ ...prev, isTouchPanning: true }));
       }
       
