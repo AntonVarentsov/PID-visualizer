@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from backend import models
 from backend.database import engine
-from backend.routers import documents_router, lines_router, ocr_router
+from backend.routers import iter_routers
 
 
 def create_app() -> FastAPI:
@@ -25,9 +25,8 @@ def create_app() -> FastAPI:
         allow_headers=["*"],
     )
 
-    app.include_router(documents_router)
-    app.include_router(lines_router)
-    app.include_router(ocr_router)
+    for router in iter_routers():
+        app.include_router(router)
 
     return app
 
