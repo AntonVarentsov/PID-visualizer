@@ -71,6 +71,25 @@ export const DISPLAY_MODE_CONFIGS: Record<DisplayMode, DisplayModeConfig> = {
 };
 
 /**
+ * Internal registry for display modes. Initialized with
+ * {@link DISPLAY_MODE_CONFIGS} so that built-in modes are available by
+ * default. New services can register additional modes at runtime.
+ */
+export const DISPLAY_MODE_REGISTRY: Map<DisplayMode, DisplayModeConfig> = new Map(
+  Object.entries(DISPLAY_MODE_CONFIGS) as [DisplayMode, DisplayModeConfig][]
+);
+
+/**
+ * Register a new display mode configuration.
+ *
+ * @param mode - Identifier of the display mode
+ * @param config - Configuration describing behaviour of the mode
+ */
+export function registerDisplayMode(mode: DisplayMode, config: DisplayModeConfig) {
+  DISPLAY_MODE_REGISTRY.set(mode, config);
+}
+
+/**
  * Legacy annotation interface (for backward compatibility)
  */
 interface LegacyAnnotation {

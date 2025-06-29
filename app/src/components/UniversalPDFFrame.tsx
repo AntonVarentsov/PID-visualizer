@@ -9,8 +9,8 @@ import type {
   OverlayEventHandlers, 
   RenderConfig 
 } from '../types/overlay';
-import { 
-  DISPLAY_MODE_CONFIGS,
+import {
+  DISPLAY_MODE_REGISTRY,
   DEFAULT_RENDER_CONFIG,
   filterByPage,
   getGroupItems,
@@ -85,7 +85,7 @@ const UniversalPDFFrame: React.FC<UniversalPDFFrameProps> = ({
   };
 
   // Get display mode configuration
-  const displayConfig = DISPLAY_MODE_CONFIGS[mode];
+  const displayConfig = DISPLAY_MODE_REGISTRY.get(mode);
 
   // Use the pan/zoom hook
   const {
@@ -111,6 +111,11 @@ const UniversalPDFFrame: React.FC<UniversalPDFFrameProps> = ({
     onPanChange,
     onPanningChange,
   });
+
+  if (!displayConfig) {
+    console.warn(`No display mode registered for "${mode}"`);
+    return null;
+  }
 
   // Initialize Fabric.js canvas
   useEffect(() => {
