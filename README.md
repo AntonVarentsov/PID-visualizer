@@ -58,3 +58,54 @@ pid_visualizer.ocr_parsers =
 ```
 
 Install the package and set `OCR_PARSER=custom` to activate it.
+
+## Adding new services
+
+The application is designed to be easily extensible both on the backend and the
+frontend.
+
+### Backend router auto-discovery
+
+During startup `backend.main.create_app()` scans the `backend/routers` package
+for modules that expose a `router` object. Each discovered router is included
+automatically, so adding a new service only requires creating a file in that
+package:
+
+```python
+# backend/routers/status.py
+from fastapi import APIRouter
+
+router = APIRouter()
+
+@router.get("/status")
+def status():
+    return {"status": "ok"}
+```
+
+### Registering new frontend display modes
+
+Overlay display modes are enumerated in `app/src/types/overlay.ts` and their
+properties live in `app/src/utils/overlayUtils.ts`. To add a mode extend the
+`DisplayMode` union and insert a configuration object:
+
+```typescript
+// app/src/types/overlay.ts
+export type DisplayMode =
+  | 'line_numbers'
+  | 'ocr_results'
+  | 'corrosion_loops'
+  | 'equipment'
+  | 'clean'
+  | 'status';
+
+// app/src/utils/overlayUtils.ts
+DISPLAY_MODE_CONFIGS.status = {
+  mode: 'status',
+  title: 'Status',
+  description: 'Show status markers',
+  defaultColor: '#ff9900',
+  showGrouping: false,
+  enableSelection: true,
+  enableHover: true,
+};
+```
