@@ -31,6 +31,29 @@ export default tseslint.config({
 })
 ```
 
+## Registering additional display modes
+
+Services can provide their own display modes by calling
+`registerDisplayMode` during application startup. This populates the internal
+registry used by `DisplayModeSelector` and `UniversalPDFFrame`:
+
+```ts
+import { registerDisplayMode } from './src/utils/overlayUtils';
+
+registerDisplayMode('my_service', {
+  mode: 'my_service',
+  title: 'My Service',
+  description: 'Items from a custom service',
+  defaultColor: '#123456',
+  showGrouping: false,
+  enableSelection: true,
+  enableHover: true,
+});
+```
+
+Call this function once before the main React tree renders so that the new mode
+appears in the selector and is recognized by the PDF frame.
+
 You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
 
 ```js
