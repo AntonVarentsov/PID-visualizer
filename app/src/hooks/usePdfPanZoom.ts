@@ -58,49 +58,17 @@ export const usePdfPanZoom = ({
   // Prevent browser zoom/pinch globally when component is mounted
   useEffect(() => {
     const preventBrowserZoom = (e: WheelEvent) => {
-      // Prevent all zoom attempts when in trackpad mode or when ctrlKey is pressed
-      if (e.ctrlKey || inputMode === 'trackpad') {
-        e.preventDefault();
-        e.stopPropagation();
-        e.stopImmediatePropagation();
-        return false;
-      }
-    };
-
-    const preventTouchZoom = (e: TouchEvent) => {
-      // Prevent all multi-touch browser zoom
-      if (e.touches.length > 1) {
-        e.preventDefault();
-        e.stopPropagation();
-        e.stopImmediatePropagation();
-        return false;
-      }
-    };
-
-    // Add global event listeners
-    document.addEventListener('wheel', preventBrowserZoom, { passive: false, capture: true });
-    document.addEventListener('touchstart', preventTouchZoom, { passive: false, capture: true });
-    document.addEventListener('touchmove', preventTouchZoom, { passive: false, capture: true });
-    
-    // Extra protection against Ctrl+wheel specifically
-    const preventCtrlWheel = (e: WheelEvent) => {
       if (e.ctrlKey) {
         e.preventDefault();
-        e.stopPropagation();
-        e.stopImmediatePropagation();
-        return false;
       }
     };
-    
-    document.addEventListener('wheel', preventCtrlWheel, { passive: false, capture: true });
+
+    document.addEventListener('wheel', preventBrowserZoom, { passive: false });
 
     return () => {
       document.removeEventListener('wheel', preventBrowserZoom);
-      document.removeEventListener('touchstart', preventTouchZoom);
-      document.removeEventListener('touchmove', preventTouchZoom);
-      document.removeEventListener('wheel', preventCtrlWheel);
     };
-  }, [inputMode]);
+  }, []);
 
   // Handle mouse move for panning (using document level events for better tracking)
   useEffect(() => {
@@ -132,16 +100,29 @@ export const usePdfPanZoom = ({
 
   // Reset state when switching input modes
   useEffect(() => {
+    // Clear all active states when switching modes
     setIsPanning(false);
+    setLastPanPoint({ x: 0, y: 0 });
     setTouchState({
       initialDistance: 0,
-      initialZoom: 1,
+      initialZoom: zoom, // Keep current zoom
       lastTouchCount: 0,
       centerPoint: { x: 0, y: 0 },
       lastPanPoint: { x: 0, y: 0 },
       isTouchPanning: false
     });
-  }, [inputMode]);
+
+    // Apply touch-action to body in trackpad mode
+    if (inputMode === 'trackpad') {
+      document.body.style.touchAction = 'manipulation';
+    } else {
+      document.body.style.touchAction = '';
+    }
+
+    return () => {
+      document.body.style.touchAction = '';
+    };
+  }, [inputMode, zoom]);
 
   // Utility functions for touch handling
   const getTouchDistance = (touch1: React.Touch, touch2: React.Touch) => {
@@ -160,8 +141,6 @@ export const usePdfPanZoom = ({
   // Handle mouse wheel for zooming
   const handleWheel = (e: React.WheelEvent) => {
     e.preventDefault();
-    e.stopPropagation();
-    e.nativeEvent.stopImmediatePropagation();
     
     const rect = frameRef.current?.getBoundingClientRect();
     if (!rect) return;
@@ -169,18 +148,10 @@ export const usePdfPanZoom = ({
     const mouseX = e.clientX - rect.left;
     const mouseY = e.clientY - rect.top;
 
-    // Simplified logic: wheel always zooms unless explicitly pan mode
-    if (inputMode === 'trackpad' && !e.ctrlKey && (e.deltaX !== 0 || Math.abs(e.deltaY) < 10)) {
-      // Trackpad pan mode - horizontal scroll or small vertical scroll
-      const deltaX = -e.deltaX * 1.5;
-      const deltaY = -e.deltaY * 1.5;
-      
-      setPanX(prev => prev + deltaX);
-      setPanY(prev => prev + deltaY);
-    } else {
-      // Zoom mode (mouse wheel or trackpad pinch)
-      const delta = -e.deltaY * 0.002;
-      const newZoom = Math.max(0.1, Math.min(5, zoom + delta));
+    // Mouse mode: always zoom
+    if (inputMode === 'mouse') {
+      const delta = -e.deltaY * 0.001; // Уменьшили скорость в 2 раза
+      const newZoom = Math.max(0.5, Math.min(2.0, zoom + delta)); // Пределы 50%-200%
 
       const zoomFactor = newZoom / zoom;
       const newPanX = mouseX - (mouseX - panX) * zoomFactor;
@@ -189,6 +160,29 @@ export const usePdfPanZoom = ({
       setZoom(newZoom);
       setPanX(newPanX);
       setPanY(newPanY);
+    }
+    // Trackpad mode: pinch gesture (Ctrl+wheel) = zoom, other = pan
+    else if (inputMode === 'trackpad') {
+      if (e.ctrlKey) {
+        // Pinch gesture - zoom
+        const delta = -e.deltaY * 0.0015; // Уменьшили скорость в 2 раза
+        const newZoom = Math.max(0.5, Math.min(2.0, zoom + delta)); // Пределы 50%-200%
+
+        const zoomFactor = newZoom / zoom;
+        const newPanX = mouseX - (mouseX - panX) * zoomFactor;
+        const newPanY = mouseY - (mouseY - panY) * zoomFactor;
+
+        setZoom(newZoom);
+        setPanX(newPanX);
+        setPanY(newPanY);
+      } else {
+        // Two-finger scroll - pan
+        const deltaX = -e.deltaX * 1.5;
+        const deltaY = -e.deltaY * 1.5;
+        
+        setPanX(prev => prev + deltaX);
+        setPanY(prev => prev + deltaY);
+      }
     }
   };
 
@@ -221,11 +215,14 @@ export const usePdfPanZoom = ({
     // Only handle touch events in trackpad mode
     if (inputMode !== 'trackpad') return;
     
-    e.preventDefault();
-    
     const touches = Array.from(e.touches);
     const rect = frameRef.current?.getBoundingClientRect();
     if (!rect) return;
+    
+    // Prevent default for multi-touch gestures
+    if (touches.length >= 2) {
+      e.preventDefault();
+    }
 
     if (touches.length === 2) {
       // Two finger touch - prepare for pinch zoom or pan
@@ -258,11 +255,14 @@ export const usePdfPanZoom = ({
     // Only handle touch events in trackpad mode
     if (inputMode !== 'trackpad') return;
     
-    e.preventDefault();
-    
     const touches = Array.from(e.touches);
     const rect = frameRef.current?.getBoundingClientRect();
     if (!rect) return;
+    
+    // Prevent default for multi-touch gestures that we're handling
+    if (touches.length >= 2) {
+      e.preventDefault();
+    }
 
     if (touches.length === 2 && touchState.lastTouchCount === 2) {
       const currentDistance = getTouchDistance(touches[0], touches[1]);
@@ -271,7 +271,7 @@ export const usePdfPanZoom = ({
       // Calculate zoom based on pinch distance
       if (touchState.initialDistance > 0) {
         const scale = currentDistance / touchState.initialDistance;
-        const newZoom = Math.max(0.1, Math.min(5, touchState.initialZoom * scale));
+        const newZoom = Math.max(0.5, Math.min(2.0, touchState.initialZoom * scale)); // Пределы 50%-200%
         
         // Calculate pan for zoom centering
         const zoomFactor = newZoom / zoom;
@@ -316,9 +316,12 @@ export const usePdfPanZoom = ({
     // Only handle touch events in trackpad mode
     if (inputMode !== 'trackpad') return;
     
-    e.preventDefault();
-    
     const remainingTouches = e.touches.length;
+    
+    // Prevent default if we were handling multi-touch
+    if (touchState.lastTouchCount >= 2) {
+      e.preventDefault();
+    }
     
     if (remainingTouches === 0) {
       // All touches ended
@@ -340,11 +343,11 @@ export const usePdfPanZoom = ({
 
   // Handle zoom buttons
   const zoomIn = () => {
-    setZoom(prev => Math.min(5, prev + 0.1));
+    setZoom(prev => Math.min(2.0, prev + 0.1)); // Максимум 200%
   };
 
   const zoomOut = () => {
-    setZoom(prev => Math.max(0.1, prev - 0.1));
+    setZoom(prev => Math.max(0.5, prev - 0.1)); // Минимум 50%
   };
 
   const resetZoom = () => {

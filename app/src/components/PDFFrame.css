@@ -6,6 +6,8 @@
   border-radius: 8px;
   padding: 10px;
   background-color: #f9f9f9;
+  /* Block pinch zoom on container too */
+  touch-action: manipulation;
 }
 
 .pdf-frame-controls {
@@ -60,8 +62,8 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
   cursor: default;
   
-  /* Touch optimization */
-  touch-action: none;
+  /* Touch optimization - allow pan but block pinch zoom */
+  touch-action: manipulation;
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   -moz-user-select: none;
