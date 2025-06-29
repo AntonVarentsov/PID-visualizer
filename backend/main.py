@@ -3,7 +3,9 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from backend import models
 from backend.database import engine
+
 from backend.routers import include_all_routers
+
 
 
 def create_app() -> FastAPI:
@@ -25,7 +27,9 @@ def create_app() -> FastAPI:
         allow_headers=["*"],
     )
 
+
     include_all_routers(app)
+
 
     return app
 
