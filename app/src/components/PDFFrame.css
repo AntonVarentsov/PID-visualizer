@@ -6,6 +6,8 @@
   border-radius: 8px;
   padding: 10px;
   background-color: #f9f9f9;
+  /* Block pinch zoom on container too */
+  touch-action: manipulation;
 }
 
 .pdf-frame-controls {
@@ -60,8 +62,8 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
   cursor: default;
   
-  /* Touch optimization */
-  touch-action: none;
+  /* Touch optimization - allow pan but block pinch zoom */
+  touch-action: manipulation;
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   -moz-user-select: none;
@@ -153,4 +155,116 @@
   display: flex;
   align-items: center;
   gap: 10px;
+}
+
+/* Mode indicator styles */
+.mode-indicator {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.mode-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+.mode-description {
+  font-size: 11px;
+  color: #666;
+  max-width: 150px;
+}
+
+/* Display mode selector styles */
+.display-mode-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px;
+  background-color: #ffffff;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+}
+
+.mode-selector-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 4px;
+}
+
+.mode-options {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.mode-option {
+  padding: 6px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #f8f9fa;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.mode-option:hover {
+  background-color: #e9ecef;
+  border-color: #adb5bd;
+}
+
+.mode-option.active {
+  background-color: #007bff;
+  border-color: #007bff;
+  color: white;
+}
+
+.mode-option.active:hover {
+  background-color: #0056b3;
+  border-color: #0056b3;
+}
+
+/* Dark theme support for new components */
+@media (prefers-color-scheme: dark) {
+  .mode-title {
+    color: #fff;
+  }
+
+  .mode-description {
+    color: #ccc;
+  }
+
+  .display-mode-selector {
+    background-color: #333;
+    border-color: #555;
+  }
+
+  .mode-selector-label {
+    color: #ccc;
+  }
+
+  .mode-option {
+    background-color: #444;
+    border-color: #666;
+    color: #fff;
+  }
+
+  .mode-option:hover {
+    background-color: #555;
+    border-color: #777;
+  }
+
+  .mode-option.active {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+  }
+
+  .mode-option.active:hover {
+    background-color: #0b5ed7;
+    border-color: #0b5ed7;
+  }
 } 
